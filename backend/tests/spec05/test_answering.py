@@ -1,4 +1,4 @@
-"""SPEC-05 §7 acceptance checks 1-11: the chat stream, refusal, citations, fallback, cancellation."""
+"""SPEC-05 §7 acceptance checks 1-12: the chat stream, refusal, citations, fallback, cancellation."""
 
 import asyncio
 import contextlib
@@ -14,6 +14,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from app.answering import service as answering
 from app.answering.citations import strip_markers, validate
 from app.answering.prompt import MALAY_LINE, SYSTEM_PROMPT, Turn
+from app.answering.scope import about_assistant, scope_text
 from app.answering.service import Event, answer_stream, search_query
 from app.api.chat import PING, sse
 from app.config import get_settings
@@ -118,6 +119,69 @@ async def test_spec05_ac02_empty_retrieval_not_found_with_contact_and_no_model_c
     assert fake(providers).calls == []
     row = await question_row(db, events)
     assert row.found is False and row.answer == streamed(events) and row.model is None
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "can i ask you anything else other than documents related to this company?",
+        "What can you do?",
+        "who are you",
+        "Are you a bot?",
+        "hi",
+        "Thanks!",
+        "help",
+    ],
+)
+def test_spec05_ac12_questions_about_the_assistant_are_recognised(question: str) -> None:
+    assert about_assistant(question) == "en"
+
+
+@pytest.mark.parametrize("question", ["Siapa awak?", "Boleh saya tanya apa-apa?", "terima kasih"])
+def test_spec05_ac12_malay_questions_about_the_assistant(question: str) -> None:
+    assert about_assistant(question) == "ms"
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "What is the ESOS vesting schedule?",
+        "Can you tell me the parking policy?",
+        "How many days of annual leave do I get?",
+        "Hi, what is the claim limit for hotels?",
+        "What happens if I am sick on a public holiday?",
+    ],
+)
+def test_spec05_ac12_document_questions_are_not_about_the_assistant(question: str) -> None:
+    assert about_assistant(question) is None
+
+
+async def test_spec05_ac12_scope_reply_when_nothing_retrieved(
+    client: httpx.AsyncClient, providers: Providers, db: AsyncSession
+) -> None:
+    events = await ask(client, "Can I ask you anything else other than company documents?")
+    text = streamed(events)
+    assert text == scope_text(False, get_settings().org_name)
+    assert "contact HR" not in text and "annual leave" in text
+    assert events[-1][1]["found"] is False and fake(providers).calls == []
+    row = await question_row(db, events)
+    assert row.found is False and row.answer == text
+
+    malay = streamed(await ask(client, "Siapa awak?"))
+    assert malay.startswith("Saya pembantu dokumen")
+
+
+async def test_spec05_ac12_documents_win_over_the_scope_reply(
+    client: httpx.AsyncClient, providers: Providers, corpus: Corpus
+) -> None:
+    """A question that matches a pattern but has documents is answered from them."""
+    await corpus.add("Leave policy", [LEAVE])
+    fake(providers).script(["Confirmed staff get fourteen days [1]."])
+    question = "What can you help me with on annual leave days for confirmed staff?"
+    assert about_assistant(question) == "en"  # it matches a pattern
+    events = await ask(client, question)
+    assert events[1][1]["sources"], "retrieval ran and found the leave chunk"
+    assert "documents assistant" not in streamed(events)
 
 
 async def test_spec05_ac02_malay_question_gets_malay_not_found(client: httpx.AsyncClient) -> None:

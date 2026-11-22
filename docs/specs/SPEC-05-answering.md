@@ -84,6 +84,11 @@ Chunk text sent to the model is capped at `CHUNK_MAX_TOKENS`; the total prompt i
 - `{contact}` comes from `NOT_FOUND_CONTACTS` (config, `department → contact`), matched by the department of the top retrieved document if any, else the default (`HR, hr@serimaju.example`).
 - Streaming a model reply that turns out to be `NOT_FOUND`: the service buffers the first 16 characters before emitting any delta, so the sentinel is never streamed.
 
+### 5.1 Questions about the assistant (added 2026-11-23)
+- When retrieval is empty **and** the question is about the assistant itself or small talk ("what can you do?", "can I ask you anything else?", "who are you", "hi", "thanks", and Malay equivalents such as "siapa awak?"), the reply is the scope text instead of the not-found text. It is still `found: false`, makes no model call and cites nothing.
+- *"I'm the {org} documents assistant. I can only answer questions from the company documents, such as leave, claims, travel or IT policies, and I show the source for every answer. Try asking something like "How many days of annual leave do I get?""* `{org}` is `ORG_NAME`. The Malay variant is used when the question is detected as `ms` or matched a Malay pattern.
+- Detection is a fixed pattern list in `answering/scope.py` (no model call). It is checked only after retrieval came back empty, so a question that matches a pattern but has documents ("what can you help me with on annual leave?") is answered from them. A document question that finds nothing still gets the not-found text with its contact.
+
 ## 6. SSE events
 
 `Content-Type: text/event-stream`. Each event is `event: <name>\ndata: <json>\n\n`. Keep-alive comment `: ping` every 15 s.
@@ -111,3 +116,4 @@ Client disconnect cancels the model stream; the `questions` row records `error_c
 9. Client disconnect stops the model stream (fake stream observes cancellation).
 10. With `history`, the prompt has the "Earlier conversation" block, the search query is the previous question plus the current one, and a citation that points into history text is impossible (sources are numbered from retrieval only).
 11. A provider error after the first delta ends the stream with `error` and does not call the `fallback` role; the same error before the first delta does.
+12. Empty retrieval for a question about the assistant (e.g. "can I ask you anything else?", "siapa awak?") gives the scope text (§5.1) with no model call. A document question with no hits still gets the not-found text, and a pattern-matching question with hits is answered from them.

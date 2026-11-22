@@ -20,6 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.answering.citations import validate
 from app.answering.prompt import Prompt, Turn, build_prompt
+from app.answering.scope import about_assistant, scope_text
 from app.config import Settings, get_settings
 from app.db.models import Question
 from app.ingestion.metadata import detect_language
@@ -216,7 +217,12 @@ async def _answer(
     await session.commit()  # no transaction stays open while the model streams
     if not hits:
         yield Event("sources", {"sources": []})
-        run.found, run.answer = False, not_found_text(run.malay, None, settings.not_found_contacts)
+        run.found = False
+        scope = about_assistant(question)
+        if scope is not None:  # SPEC-05 §5.1: say what can be asked instead of "contact HR"
+            run.answer = scope_text(run.malay or scope == "ms", settings.org_name)
+        else:
+            run.answer = not_found_text(run.malay, None, settings.not_found_contacts)
         yield run.delta(run.answer)
         yield run.done(TokenUsage(), None)
         return
