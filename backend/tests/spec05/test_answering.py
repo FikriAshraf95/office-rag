@@ -124,20 +124,60 @@ async def test_spec05_ac02_empty_retrieval_not_found_with_contact_and_no_model_c
 @pytest.mark.parametrize(
     "question",
     [
+        # Plain English.
         "can i ask you anything else other than documents related to this company?",
+        "hi, can you answer questions not about our company?",
+        "can I ask you anything else?",
         "What can you do?",
+        "What else can you do?",
         "who are you",
         "Are you a bot?",
+        "Can you answer general knowledge questions?",
+        "Can you talk about other topics?",
+        "Can I ask about something unrelated?",
+        "Do you only know about the company?",
+        "How do I use this app?",
+        "What is this bot for?",
         "hi",
+        "Hello there!",
         "Thanks!",
+        "thank u so much",
+        "ok noted",
         "help",
+        # Broken English and Manglish.
+        "u can answer other thing?",
+        "can ask other question or not",
+        "what u can do",
+        "u can do what?",
+        "you know everything?",
+        "can talk random stuff?",
+        "u only answer company thing ah?",
+        "hello, can ask non work question?",
+        "can i ask u smth else",
+        "who r u",
+        "what ur job",
+        "how to use dis",
+        "u can help with other stuff outside company?",
     ],
 )
 def test_spec05_ac12_questions_about_the_assistant_are_recognised(question: str) -> None:
     assert about_assistant(question) == "en"
 
 
-@pytest.mark.parametrize("question", ["Siapa awak?", "Boleh saya tanya apa-apa?", "terima kasih"])
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Siapa awak?",
+        "Boleh saya tanya apa-apa?",
+        "terima kasih",
+        "boleh tanya benda lain tak?",
+        "awak boleh jawab soalan lain ke?",
+        "boleh tanya soalan bukan pasal syarikat?",
+        "apa awak boleh buat?",
+        "macam mana nak guna?",
+        "leh tanya hal lain x",
+    ],
+)
 def test_spec05_ac12_malay_questions_about_the_assistant(question: str) -> None:
     assert about_assistant(question) == "ms"
 
@@ -150,6 +190,18 @@ def test_spec05_ac12_malay_questions_about_the_assistant(question: str) -> None:
         "How many days of annual leave do I get?",
         "Hi, what is the claim limit for hotels?",
         "What happens if I am sick on a public holiday?",
+        # Policy questions that use the same words as off-topic ones.
+        "Can I claim anything else besides mileage?",
+        "What other benefits do staff get?",
+        "Is there other info about maternity leave?",
+        "Can I work outside office hours?",
+        "Can I carry forward my leave to next year?",
+        "What else can I claim for travel?",
+        "Berapa lagi cuti yang saya boleh ambil?",
+        "Boleh saya claim apa-apa untuk perjalanan outstation?",
+        "Can I bring anything for the company dinner?",
+        "Who approves my leave?",
+        "Do I need a medical certificate for one day of sick leave?",
     ],
 )
 def test_spec05_ac12_document_questions_are_not_about_the_assistant(question: str) -> None:
