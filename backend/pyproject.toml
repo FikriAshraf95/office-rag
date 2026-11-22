@@ -1,0 +1,77 @@
+[project]
+name = "office-rag"
+version = "0.1.0"
+description = "Company Docs RAG backend"
+requires-python = ">=3.14,<3.15"
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic>=2",
+    "pydantic-settings",
+    "sqlalchemy[asyncio]>=2",
+    "asyncpg",
+    "alembic",
+    "pgvector",
+    "openai",
+    "httpx",
+    "python-multipart",
+    "pyyaml",
+    "structlog",
+]
+
+[dependency-groups]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pytest-socket",
+    "ruff",
+    "mypy",
+    "import-linter",
+    "types-pyyaml",
+    "types-openpyxl>=3.1.5.20261017",
+]
+# Worker only (SPEC-11 §2): Docling, XLSX reading and the embedding tokenizer. The API image does not install this group.
+worker = [
+    "docling>=2.151.1",
+    "openpyxl>=3.1.5",
+    "transformers>=5.23.0",
+    "torch",
+    "torchvision",
+]
+
+[tool.uv]
+package = false
+
+# CPU-only torch for Docling (SPEC-11 §2): the PyPI Linux wheels pull in ~3 GB of CUDA libraries.
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cpu" }]
+torchvision = [{ index = "pytorch-cpu" }]
+
+[tool.ruff]
+line-length = 110
+target-version = "py314"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "ASYNC", "RUF"]
+
+[tool.mypy]
+strict = true
+python_version = "3.14"
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["pgvector.*", "asyncpg.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+testpaths = ["tests"]
+addopts = "--disable-socket --allow-hosts=127.0.0.1,localhost,::1"
+markers = ["docling: slow tests that load Docling"]

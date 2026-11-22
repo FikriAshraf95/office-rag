@@ -1,0 +1,352 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import './tokens.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Self-hosted fonts under the token family names (the CSP blocks font CDNs, SPEC-07 §3). Poppins
+   ships only the weights the type styles use: 400, 500 and 600 (design-system §3), as WOFF2 in two
+   subsets: latin, and latin-ext, which the browser fetches only for text that needs it. */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('../assets/fonts/poppins/poppins-latin-400-normal.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('../assets/fonts/poppins/poppins-latin-500-normal.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url('../assets/fonts/poppins/poppins-latin-600-normal.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('../assets/fonts/poppins/poppins-latin-ext-400-normal.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+    U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('../assets/fonts/poppins/poppins-latin-ext-500-normal.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+    U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 600;
+  src: url('../assets/fonts/poppins/poppins-latin-ext-600-normal.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF,
+    U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 400;
+  src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-400-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 500;
+  src: url('@fontsource/jetbrains-mono/files/jetbrains-mono-latin-500-normal.woff2') format('woff2');
+}
+
+@layer base {
+  html,
+  body,
+  #app {
+    height: 100%;
+  }
+  body {
+    background: var(--surface-page);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+  *,
+  ::before,
+  ::after {
+    border-color: var(--border);
+  }
+  /* Focus: 2px focus-ring with 2px offset, never removed (design-system §8). */
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+  /* Text inputs, selects and textareas: the ring is drawn over the field's own edge, not outside it. */
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role='combobox']:focus-visible {
+    outline-offset: -1px;
+  }
+  /*
+   * Scrollbars (design-system §8): thin, no arrow buttons, and the thumb only shows while the
+   * scroller is hovered or holds focus. Nothing is hidden for real (no display:none, no overflow
+   * change), so wheel, trackpad, touch and keyboard scrolling work as usual. The thumb uses
+   * `border-strong`, which keeps 3:1 against the surfaces. `scrollbar-visible` keeps it showing.
+   *
+   * Chromium and Safari get the ::-webkit-scrollbar rules, the only way to drop the arrow buttons;
+   * the standard properties are left out there on purpose, since Chromium ignores the
+   * ::-webkit-scrollbar rules once scrollbar-width or scrollbar-color is set. Firefox gets the
+   * standard properties.
+   */
+  @supports not selector(::-webkit-scrollbar) {
+    * {
+      scrollbar-width: thin;
+      scrollbar-color: transparent transparent;
+    }
+    *:hover,
+    *:focus-within,
+    .scrollbar-visible {
+      scrollbar-color: var(--border-strong) transparent;
+    }
+  }
+  @supports selector(::-webkit-scrollbar) {
+    ::-webkit-scrollbar {
+      width: var(--space-2);
+      height: var(--space-2);
+    }
+    /* display:none alone still leaves Chromium painting the arrows; zero size removes them. */
+    ::-webkit-scrollbar-button,
+    ::-webkit-scrollbar-button:single-button,
+    ::-webkit-scrollbar-button:double-button {
+      display: none;
+      width: 0;
+      height: 0;
+    }
+    ::-webkit-scrollbar-track,
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+    /* A 4px thumb inside the 8px track: the transparent border pads it. */
+    ::-webkit-scrollbar-thumb {
+      border: 2px solid transparent;
+      border-radius: var(--space-2);
+      background-color: transparent;
+      background-clip: padding-box;
+    }
+    *:hover::-webkit-scrollbar-thumb,
+    *:focus-within::-webkit-scrollbar-thumb,
+    .scrollbar-visible::-webkit-scrollbar-thumb {
+      background-color: var(--border-strong);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    ::before,
+    ::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+/*
+ * Touch: controls grow to the 44px tap target (design-system §11). Outside @layer base on purpose:
+ * tokens.css is unlayered, and an unlayered :root beats any layered rule for the same variable.
+ */
+@media (pointer: coarse) {
+  :root {
+    --control-h: var(--control-h-touch);
+  }
+}
+
+/* Rich text (Office Suite), the base look for HTML shown through SafeHtml. Tokens only. */
+.rich-text {
+  overflow-wrap: anywhere;
+}
+.rich-text > * + * {
+  margin-top: 0.5rem;
+}
+.rich-text p:empty::before {
+  content: '\00a0';
+}
+.rich-text strong {
+  font-weight: 600;
+}
+.rich-text em {
+  font-style: italic;
+}
+.rich-text u {
+  text-decoration: underline;
+}
+.rich-text s {
+  text-decoration: line-through;
+}
+.rich-text a {
+  color: var(--brand-ink);
+  text-decoration: underline;
+}
+.rich-text ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.rich-text ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.rich-text blockquote {
+  border-left: 3px solid var(--border-strong);
+  padding-left: 0.75rem;
+  color: var(--ink-muted);
+}
+.rich-text code {
+  font-family: var(--font-mono);
+  background: var(--surface-sunken);
+  border-radius: 4px;
+  padding: 0 0.25rem;
+}
+.rich-text pre {
+  font-family: var(--font-mono);
+  background: var(--surface-sunken);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  overflow-x: auto;
+}
+.rich-text pre code {
+  background: none;
+  padding: 0;
+}
+.rich-text h3 {
+  font-weight: 600;
+}
+
+/*
+ * Answers (SPEC-07 §5.3): markdown-it output, sanitised, shown through SafeHtml. The answer
+ * allowlist adds tables, h4, sup and citation buttons on top of the rich-text look. Tokens only.
+ */
+.answer-prose {
+  overflow-wrap: anywhere;
+  color: var(--ink);
+}
+.answer-prose > * + * {
+  margin-top: 0.75rem;
+}
+.answer-prose strong {
+  font-weight: 600;
+}
+.answer-prose em {
+  font-style: italic;
+}
+.answer-prose a {
+  color: var(--brand-ink);
+  text-decoration: underline;
+}
+.answer-prose ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+}
+.answer-prose ol {
+  list-style: decimal;
+  padding-left: 1.25rem;
+}
+.answer-prose li + li {
+  margin-top: 0.25rem;
+}
+.answer-prose blockquote {
+  border-left: 3px solid var(--border-strong);
+  padding-left: 0.75rem;
+  color: var(--ink-muted);
+}
+.answer-prose code {
+  font-family: var(--font-mono);
+  background: var(--surface-sunken);
+  border-radius: 4px;
+  padding: 0 0.25rem;
+}
+.answer-prose pre {
+  font-family: var(--font-mono);
+  background: var(--surface-sunken);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  overflow-x: auto;
+}
+.answer-prose pre code {
+  background: none;
+  padding: 0;
+}
+.answer-prose h3 {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  font-weight: 600;
+}
+.answer-prose h4 {
+  font-weight: 600;
+}
+.answer-prose sup {
+  font-size: 0.75em;
+}
+/* Wide tables scroll inside the answer instead of widening the thread. */
+.answer-prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+.answer-prose th,
+.answer-prose td {
+  border: 1px solid var(--border-strong);
+  padding: 0.375rem 0.5rem;
+  vertical-align: top;
+  text-align: left;
+}
+.answer-prose th {
+  background: var(--surface-sunken);
+  font-weight: 600;
+}
+/* Citation chip: a button per [n], handled by event delegation on the message (data-cite). */
+.answer-prose button.citation {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  margin: 0 0.125rem;
+  padding: 0 0.25rem;
+  vertical-align: super;
+  font-size: 0.75rem;
+  line-height: 1;
+  font-weight: 600;
+  border-radius: 4px;
+  background: var(--surface-selected);
+  color: var(--brand-ink);
+  cursor: pointer;
+}
+.answer-prose button.citation:hover {
+  background: var(--surface-hover);
+}

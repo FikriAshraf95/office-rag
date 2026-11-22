@@ -1,0 +1,36 @@
+event: meta
+data: {"questionId":"ffc239de-89f9-4d4b-81d6-bce88a7fef96"}
+
+event: sources
+data: {"sources":[{"n":1,"documentId":"1c1b76ea-3eee-452c-a089-610fae2288f5","chunkId":"4d3931e0-b5a9-419a-b62e-77f0d2d00cbc","title":"Employee Handbook 2026","fileType":"pdf","headingPath":["Employee Handbook 2026","4.2 Applying for annual leave"],"section":"4.2","pageStart":3,"pageEnd":3,"sheet":null,"effectiveDate":"2026-01-01","snippet":"Employee Handbook 2026 > 4.2 Applying for annual leave All leave is applied for through the Kakitangan portal. Leave of 3 working days or less must be applied for at least 3 working days in advance. Leave of more than 3 working days must be applied for at least 14 calendar days in advance. Maximum p"},{"n":2,"documentId":"216a51c3-bead-4f12-b746-351da5a8dbae","chunkId":"d268bdab-1d53-4bb8-9eca-2660e6047e0c","title":"Leave Entitlement by Grade 2026","fileType":"xlsx","headingPath":["Leave Entitlement by Grade 2026","Other Leave"],"section":null,"pageStart":null,"pageEnd":null,"sheet":"Other Leave","effectiveDate":"2026-01-01","snippet":"Leave Entitlement by Grade 2026 > Other Leave | Leave type | Entitlement | Notes | | --- | --- | --- | | Medical leave (< 2 years) | 14 days | Medical certificate required | | Medical leave (2–5 years) | 18 days | Medical certificate required | | Medical leave (> 5 years) | 22 days | Medical certifi"},{"n":3,"documentId":"199371ea-06a0-41fd-ae80-be3dd9516756","chunkId":"017bbbc0-5ae8-446c-8cd2-0b1aa9400d0c","title":"SERIMAJU TECHNOLOGIES SDN BHD","fileType":"png","headingPath":["SERIMAJU TECHNOLOGIES SDN BHD","INTERNAL N MEMO"],"section":null,"pageStart":1,"pageEnd":1,"sheet":null,"effectiveDate":"2026-10-01","snippet":"SERIMAJU TECHNOLOGIES SDN BHD > INTERNAL N MEMO To: From: Date: Ref: Subject: All Employees TanMei Ling, Head of Human Resources 15 September 2026 HR/MEMO/2026/09 Amendments to Leave Policy (Employee Handbook 2026, Section 4) Following feedback from the staff engagement survey, Management has approv"},{"n":4,"documentId":"1c1b76ea-3eee-452c-a089-610fae2288f5","chunkId":"6f3611fe-447f-4170-9e38-1eb19b96aab7","title":"Employee Handbook 2026","fileType":"pdf","headingPath":["Employee Handbook 2026","4.4 Other leave types"],"section":"4.4","pageStart":3,"pageEnd":3,"sheet":null,"effectiveDate":"2026-01-01","snippet":"Employee Handbook 2026 > 4.4 Other leave types | Leave type | Entitlement | |-----------------------|------------------------------------------------------------------| | Medical leave | 14 days (< 2 yrs), 18 days (2-5 yrs), 22 days (> 5 yrs) per year | | Hospitalisation leave | 60 days per year, in"},{"n":5,"documentId":"1c1b76ea-3eee-452c-a089-610fae2288f5","chunkId":"eb21a898-5cbe-4dce-8b37-9f6d028eb545","title":"Employee Handbook 2026","fileType":"pdf","headingPath":["Employee Handbook 2026","6. Remote Work Abroad"],"section":"6","pageStart":4,"pageEnd":4,"sheet":null,"effectiveDate":"2026-01-01","snippet":"Employee Handbook 2026 > 6. Remote Work Abroad Employees may work remotely from outside Malaysia for a maximum of 20 working days per calendar year, subject to prior approval from the HOD and HR. Client contracts may prohibit remote access from abroad (see the Client Engagement policy)."},{"n":6,"documentId":"216a51c3-bead-4f12-b746-351da5a8dbae","chunkId":"ff8e04dd-e033-4592-b721-cb2f3d32c300","title":"Leave Entitlement by Grade 2026","fileType":"xlsx","headingPath":["Leave Entitlement by Grade 2026","Annual Leave 2026"],"section":null,"pageStart":null,"pageEnd":null,"sheet":"Annual Leave 2026","effectiveDate":"2026-01-01","snippet":"Leave Entitlement by Grade 2026 > Annual Leave 2026 | Grade band | Grades | Less than 2 years | 2 to 5 years | More than 5 years | | --- | --- | --- | --- | --- | | Executive | E1, E2, E3 | 14 | 16 | 18 | | Senior | S1, S2 | 16 | 18 | 20 | | Manager | M1, M2, M3 | 18 | 20 | 22 | | Director | D | 22 "},{"n":7,"documentId":"1c1b76ea-3eee-452c-a089-610fae2288f5","chunkId":"34725b06-2800-4584-a1dc-4c77fa21d65f","title":"Employee Handbook 2026","fileType":"pdf","headingPath":["Employee Handbook 2026","2.2 Hybrid work"],"section":"2.2","pageStart":2,"pageEnd":2,"sheet":null,"effectiveDate":"2026-01-01","snippet":"Employee Handbook 2026 > 2.2 Hybrid work Serimaju operates a hybrid model. Employees must work from the Kuala Lumpur office a minimum of 3 days per week, on Tuesday, Wednesday and Thursday. Monday and Friday may be worked remotely. Client-site days count as office days."},{"n":8,"documentId":"6e700a8c-1655-417a-9435-a2d7877423ff","chunkId":"f0d00fb5-2ea3-48cf-be09-2ff601eeed46","title":"Travel and Claims SOP","fileType":"md","headingPath":["Travel and Claims SOP","7. Approvals and payment"],"section":"7","pageStart":null,"pageEnd":null,"sheet":null,"effectiveDate":"2026-02-01","snippet":"Travel and Claims SOP > 7. Approvals and payment - Claims up to RM 2,000: approved by your immediate supervisor. - Claims **over RM 2,000**: require approval from both the **HOD and Finance**. - Approved claims are paid with the next monthly salary if approved by the 20th of the month."}]}
+
+event: delta
+data: {"text":"10 working days ("}
+
+event: delta
+data: {"text":"with"}
+
+event: delta
+data: {"text":" immediate"}
+
+event: delta
+data: {"text":" supervisor"}
+
+event: delta
+data: {"text":" approval"}
+
+event: delta
+data: {"text":")"}
+
+event: delta
+data: {"text":" ["}
+
+event: delta
+data: {"text":"3"}
+
+event: delta
+data: {"text":"]"}
+
+event: done
+data: {"found":true,"cited":[3],"model":"nemo-super","usage":{"promptTokens":2224,"completionTokens":14},"latencyMs":730,"firstTokenMs":664}
+

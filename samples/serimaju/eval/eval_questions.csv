@@ -1,0 +1,33 @@
+id,question,expected_answer,expected_sources,category,notes
+Q01,What is the maximum number of consecutive working days I can take in one leave application without HOD approval?,10 consecutive working days (effective 1 Oct 2026). Longer needs HOD + HR approval.,Memo_HR_2026-09_Leave_Policy_Amendment_scan.png; HR_Employee_Handbook_2026.pdf §4.2,override / OCR,"Trap: Handbook 2026 says 7, Handbook 2024 says 5. Correct answer must use the memo."
+Q02,How many days of annual leave does a Grade M2 manager with 6 years of service get?,22 days per year.,Leave_Entitlement_by_Grade_2026.xlsx (Annual Leave 2026); HR_Employee_Handbook_2026.pdf §4.1,table lookup,Trap: Handbook 2024 gives 20.
+Q03,How many annual leave days does a new Executive (E1) with 1 year of service get?,14 days per year.,Leave_Entitlement_by_Grade_2026.xlsx,table lookup,
+Q04,"How many days of annual leave can I carry forward, and by when must I use leave carried forward from 2026?",Up to 5 days; 2026 balances can be used until 30 April 2027 (normally 31 March).,Memo scan; HR_Employee_Handbook_2026.pdf §4.3,override / OCR,Trap: Handbook 2024 says 8 days by 30 June.
+Q05,How far in advance must I apply for 5 days of annual leave?,At least 14 calendar days in advance (leave of more than 3 working days).,HR_Employee_Handbook_2026.pdf §4.2,policy,
+Q06,"How many days a week must I work from the office, and which days?","Minimum 3 days: Tuesday, Wednesday and Thursday.",HR_Employee_Handbook_2026.pdf §2.2,version,Trap: Handbook 2024 says 2 days.
+Q07,What are the core working hours?,"10:00 to 16:00 (standard hours 9:00–18:00, Mon–Fri).",HR_Employee_Handbook_2026.pdf §2.1,version,Trap: 2024 says 10:00–15:00.
+Q08,What is the yearly limit for outpatient medical claims?,"RM 1,500 per calendar year (dental RM 500).",HR_Employee_Handbook_2026.pdf §5,version,"Trap: 2024 says RM 1,000."
+Q09,What is the notice period for a manager (M grade) who resigns?,2 months.,HR_Employee_Handbook_2026.pdf §3.2,version,Trap: 2024 says 1 month.
+Q10,"Can I work remotely from overseas, and for how long?","Yes, up to 20 working days per calendar year with HOD and HR approval. But Bank Teratai systems may not be accessed from outside Malaysia.",HR_Employee_Handbook_2026.pdf §6; Client_Engagement_and_Data_Handling_Policy.docx §2.1,multi-hop,Good answer combines both documents.
+Q11,How many days of paternity leave do employees get?,7 consecutive days.,HR_Employee_Handbook_2026.pdf §4.4; Leave_Entitlement xlsx (Other Leave),policy,
+Q12,What is the mileage claim rate for using my own car?,"RM 0.70 per km, plus toll and parking with receipts.",Travel_and_Claims_SOP.md §5,policy,
+Q13,What is the hotel limit per night for a business trip to Penang?,RM 350 per night.,Travel_and_Claims_SOP.md §3,table lookup,
+Q14,Can a Senior (S2) engineer fly business class to London?,No. Business class is only for flights over 6 hours AND for M grades and above; S2 flies economy.,Travel_and_Claims_SOP.md §2,reasoning,
+Q15,What is the deadline for submitting an expense claim?,Within 30 days of the expense; claims older than 60 days are rejected.,Travel_and_Claims_SOP.md §6,policy,
+Q16,"Who needs to approve a claim of RM 2,500?","Both the HOD and Finance (claims over RM 2,000).",Travel_and_Claims_SOP.md §7,reasoning,
+Q17,What is the minimum password length?,"14 characters, stored in Bitwarden; MFA is mandatory.",IT_Security_Policy_v3.docx §2.1,policy,
+Q18,Can I paste Bank Teratai customer data into ChatGPT on my personal account to summarise it?,"No. Client production data is Restricted and may only be used with approved AI tools (company Claude workspace, company GitHub Copilot); personal AI accounts are never approved for client data.",IT_Security_Policy_v3.docx §4–5; Client_Engagement policy §1,multi-hop / guardrail,
+Q19,I clicked a phishing link. Who do I report it to and how quickly?,Email security@serimaju.example within 1 hour; outside office hours also call IT on-call at ext. 2222.,IT_Security_Policy_v3.docx §6,policy,
+Q20,Within how many hours must Bank Teratai be notified of a security incident?,2 hours (after internal reporting to Security within 1 hour).,Client_Engagement_and_Data_Handling_Policy.docx §2.1; Client_Accounts_Q4_2026.xlsx,table lookup,
+Q21,What do I need before visiting the Pelita Precision factory?,"Book at least 3 working days ahead through the account manager (Arjun Pillai), complete a safety induction, and wear safety boots and a high-visibility vest. No USB drives on the OT network.",Client_Engagement_and_Data_Handling_Policy.docx §2.2; Travel_and_Claims_SOP.md §1,multi-hop,
+Q22,Where must Gemilang Capital data be hosted?,Malaysia or Singapore.,Client_Engagement policy §2.3; Client_Accounts_Q4_2026.xlsx,table lookup,
+Q23,"Who is the account manager for Gemilang Capital, and who does she report to?","Zainab Yusof; she reports to Nurul Huda, Client Delivery Director.",Client_Accounts_Q4_2026.xlsx; Org_Chart_2026.jpg,multi-hop / vision,
+Q24,Who does the Finance team report to?,"Finance Manager Kumar Selvam, who reports to CFO Hafiz Osman.",Org_Chart_2026.jpg,vision,
+Q25,Who is the Head of Security and which executive do they report to?,Jason Wong; reports to CTO Daniel Lim.,Org_Chart_2026.jpg; IT_Security_Policy_v3.docx,vision,
+Q26,How many people are working on Bank Teratai projects?,"15 (BTB-0142: 9, BTB-0157: 6).",Client_Accounts_Q4_2026.xlsx (Active Projects),table aggregation,
+Q27,When does the Gemilang Capital contract end?,31 December 2026.,Client_Accounts_Q4_2026.xlsx (Accounts),table lookup,
+Q28,Adakah saya perlu mengambil cuti tahunan pada 29 Disember 2026?,Tidak. 29 Disember 2026 ialah cuti syarikat (tidak ditolak daripada cuti tahunan). Cuti tahunan hanya diperlukan pada 28 dan 31 Disember.,Notis_Penutupan_Akhir_Tahun_2026_Year_End_Closure.pdf,multilingual (Malay question),Answer should be in Malay.
+Q29,Which days during the year-end closure do I need to apply annual leave for?,"28 and 31 December 2026 (or work from home with HOD agreement). 24, 29, 30 Dec are company leave; 25 Dec and 1 Jan are public holidays.",Notis_Penutupan_Akhir_Tahun_2026_Year_End_Closure.pdf,multilingual doc,
+Q30,What is the company's employee stock option (ESOS) vesting schedule?,Not found in the documents. Should say it can't find this and suggest contacting HR (hr@serimaju.example).,(none),not found,Must NOT guess.
+Q31,Can I bring my dog to the office?,Not found in the documents; should say so and suggest HR.,(none),not found,Must NOT guess.
+Q32,Is office parking reimbursed?,No. The Travel and Claims SOP says office parking is not reimbursed.,Travel_and_Claims_SOP.md §5,policy (negative),Distinguish from 'not found': the answer exists.

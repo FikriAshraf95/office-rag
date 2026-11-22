@@ -1,0 +1,14 @@
+.env
+storage/
+node_modules/
+.venv/
+dist/
+__pycache__/
+*.pyc
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.import_linter_cache/
+# Dev run logs and browser-automation captures can hold questions and answers (SPEC-09 §5).
+*.log
+.mcp.playwright/

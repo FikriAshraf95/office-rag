@@ -1,0 +1,11 @@
+{
+  "allowedExtensions": [".pdf", ".docx", ".xlsx", ".md", ".png", ".jpg", ".jpeg"],
+  "maxUploadBytes": 26214400,
+  "demoUsers": [
+    { "id": "aisyah", "name": "Aisyah (HR)", "groups": ["all", "hr"] },
+    { "id": "ben", "name": "Ben (Staff)", "groups": ["all"] }
+  ],
+  "accessGroups": ["all", "hr"],
+  "docTypes": ["policy", "handbook", "memo", "sop", "spreadsheet", "notice", "chart", "other"],
+  "orgName": "Serimaju"
+}

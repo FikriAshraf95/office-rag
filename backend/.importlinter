@@ -1,0 +1,98 @@
+[importlinter]
+root_packages =
+    app
+include_external_packages = True
+
+[importlinter:contract:sdk-only-in-providers]
+name = openai and httpx/httpx2 only in app.providers (SPEC-01 §2, SPEC-06 §8 check 7)
+type = forbidden
+source_modules =
+    app.api
+    app.security
+    app.db
+    app.ingestion
+    app.retrieval
+    app.answering
+    app.config
+    app.main
+forbidden_modules =
+    openai
+    httpx
+    httpx2
+allow_indirect_imports = True
+
+[importlinter:contract:docling-only-in-parsers]
+name = docling only in app.ingestion.parsers (SPEC-01 §2)
+type = forbidden
+source_modules =
+    app.api
+    app.security
+    app.db
+    app.providers
+    app.retrieval
+    app.answering
+    app.config
+    app.main
+    app.ingestion.chunking
+    app.ingestion.extract
+    app.ingestion.jobs
+    app.ingestion.metadata
+    app.ingestion.service
+    app.ingestion.types
+    app.ingestion.worker
+forbidden_modules =
+    docling
+    docling_core
+allow_indirect_imports = True
+
+[importlinter:contract:api-boundaries]
+name = api imports no providers except providers.usage, no parsers (SPEC-01 §2)
+type = forbidden
+source_modules =
+    app.api
+forbidden_modules =
+    app.providers.base
+    app.providers.errors
+    app.providers.fakes
+    app.providers.openai_compat
+    app.providers.rerank_http
+    app.providers.registry
+    app.providers.pricing
+    app.providers.retry
+allow_indirect_imports = True
+
+[importlinter:contract:providers-are-low-level]
+name = providers import nothing app-level except config and db (SPEC-01 §2)
+type = forbidden
+source_modules =
+    app.providers
+forbidden_modules =
+    app.api
+    app.security
+    app.ingestion
+    app.retrieval
+    app.answering
+    app.main
+
+[importlinter:contract:retrieval-reads-only]
+name = retrieval imports no api and no ingestion; writes live in ingestion/service.py (SPEC-04)
+type = forbidden
+source_modules =
+    app.retrieval
+forbidden_modules =
+    app.api
+    app.ingestion
+allow_indirect_imports = True
+
+[importlinter:contract:answering-boundaries]
+name = answering imports no api and no ingestion writers; it writes only `questions` (SPEC-01 §2, D005)
+type = forbidden
+source_modules =
+    app.answering
+forbidden_modules =
+    app.api
+    app.ingestion.service
+    app.ingestion.worker
+    app.ingestion.jobs
+    app.ingestion.extract
+allow_indirect_imports = True

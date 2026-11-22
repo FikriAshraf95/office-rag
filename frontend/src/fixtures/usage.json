@@ -1,0 +1,34 @@
+{
+  "byModel": [
+    {
+      "model": "nemo-super",
+      "role": "chat",
+      "purpose": "answer",
+      "calls": 12,
+      "promptTokens": 26880,
+      "completionTokens": 1410,
+      "costMyr": null
+    },
+    {
+      "model": "bge-m3",
+      "role": "embedding",
+      "purpose": "ingest",
+      "calls": 9,
+      "promptTokens": 18240,
+      "completionTokens": 0,
+      "costMyr": 0.03
+    },
+    {
+      "model": "bge-m3",
+      "role": "embedding",
+      "purpose": "query",
+      "calls": 14,
+      "promptTokens": 210,
+      "completionTokens": 0,
+      "costMyr": 0
+    }
+  ],
+  "questions": { "count": 14, "avgLatencyMs": 2140, "avgFirstTokenMs": 980, "avgTokens": 2290 },
+  "ingestion": { "documents": 9, "chunks": 64, "embedTokens": 18240 },
+  "balances": { "planTokens": 4820000, "paygMyr": 18.4, "readAt": "2026-11-21T02:30:00Z" }
+}

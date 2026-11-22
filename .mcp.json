@@ -1,0 +1,17 @@
+{
+  "mcpServers": {
+    "Figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp",
+      "headers": {
+        "X-Figma-Token": ""
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["-y", "@playwright/mcp@latest", "--output-dir", ".mcp.playwright"]
+    }
+  }
+}
+
+

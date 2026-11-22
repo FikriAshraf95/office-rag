@@ -1,0 +1,12 @@
+event: meta
+data: {"questionId":"f23998d0-8bdf-4f08-ab2e-318839ff9470"}
+
+event: sources
+data: {"sources":[]}
+
+event: delta
+data: {"text":"I couldn't find this in the documents I have access to. Please contact HR, hr@serimaju.example."}
+
+event: done
+data: {"found":false,"cited":[],"model":null,"usage":{"promptTokens":0,"completionTokens":0},"latencyMs":120,"firstTokenMs":120}
+
