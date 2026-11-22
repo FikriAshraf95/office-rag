@@ -8,6 +8,7 @@ import pytest
 
 from app.config import get_settings
 from app.eval.judge import expected_stems, final_verdict, parse_verdict, source_check
+from app.eval.report import summarize
 from app.eval.run import run
 from tests.corpus import Corpus
 
@@ -36,6 +37,23 @@ async def test_spec10_ac02_eval_writes_both_reports(
     assert "Score:" in md and "/ 2" in md
     assert "## By category" in md and "## Failures and triage" in md
     assert "Q01" in md and "Q30" in md
+    answered = {r["model"] for r in data["rows"] if r["model"]}
+    assert data["meta"]["answerModel"] in answered
+
+
+def test_eval_cost_counts_gate_refusals_as_free() -> None:
+    def row(model: str | None) -> dict[str, object]:
+        return {
+            "category": "policy", "score": 1.0, "verdict": "correct", "latency_ms": 100, "first_token_ms": 50,
+            "model": model, "prompt_tokens": 1_000_000 if model else 0, "completion_tokens": 0,
+        }  # fmt: skip
+
+    meta = {"provider": "ilmu"}
+    # A PAYG model answered one question; the gate refused the other with no model call (done.model null).
+    summary = summarize(meta, [row("ilmu-glm-5.3-flash"), row(None)])
+    assert summary["costMyrPerQuestion"] == pytest.approx(0.55 / 2)
+    # A plan-quota model has no price, so the run has no cost figure.
+    assert summarize(meta, [row("nemo-super"), row(None)])["costMyrPerQuestion"] is None
 
 
 def test_spec10_ac03_correct_without_expected_source_is_downgraded() -> None:

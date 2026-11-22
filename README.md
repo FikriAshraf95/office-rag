@@ -36,23 +36,27 @@ All ports bind to loopback. **Reset everything:** `docker compose down -v` (drop
 
 ### Local development
 
-Postgres in Docker; API, worker and frontend on the host ([SPEC-11 §4](docs/specs/SPEC-11-deployment.md#4-run-book)).
+Everything runs in a dev container; nothing is installed on the host ([SPEC-11 §4](docs/specs/SPEC-11-deployment.md#4-run-book)). Stop the full stack first (same ports).
 
 ```bash
-uv python install 3.14                                   # once
-docker compose up -d postgres
-cd backend && uv sync --all-groups && uv run alembic upgrade head
-uv run uvicorn app.main:app --reload --port 8000         # API
-uv run python -m app.ingestion.worker                    # worker (second terminal)
-cd frontend && npm ci && npm run dev                     # http://localhost:5173
+docker compose -f docker-compose.dev.yml up -d           # Postgres (5433) + dev container (Python 3.14 + uv, Node 22)
+alias dx='docker compose -f docker-compose.dev.yml exec dev'
+dx sh -c "cd backend && uv sync --all-groups && uv run alembic upgrade head"
+dx sh -c "cd backend && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"   # API
+dx sh -c "cd backend && uv run python -m app.ingestion.worker"                            # worker
+dx sh -c "cd frontend && npm ci && npm run dev -- --host 0.0.0.0"                         # http://localhost:5173
 ```
 
-Checks: `uv run pytest -q` (fake AI, no network), `uv run ruff check . && uv run mypy app && uv run lint-imports`, and in `frontend/` `npm run lint && npm run typecheck && npm run test`.
+Checks: `dx sh -c "cd backend && uv run pytest -q"` (fake AI, no network), `uv run ruff check . && uv run mypy app && uv run lint-imports`, and in `frontend/` `npm run lint && npm run typecheck && npm run test`. The full command list is in [`CLAUDE.md`](CLAUDE.md).
+
+**Release check** on the full stack, after uploading the documents: `bash scripts/release_check.sh` (healthy services, SSE unbuffered through nginx, the worker parsing with no network, no secrets in images).
 
 ### Evaluation
 
 ```bash
-cd backend && uv run python -m app.eval --base-url http://localhost:8000 --user ben --label <name>
+# against the full stack (results land in eval-results/)
+docker compose run --rm --no-deps -v "$PWD/samples:/samples:ro" -v "$PWD/eval-results:/eval-results" \
+  api python -m app.eval --base-url http://api:8000 --user ben --label <name>
 ```
 
 Asks all 32 questions through the API like a user, has a judge model score each answer (correct 1, partial 0.5, wrong 0), and writes a report to `eval-results/`. Model comparison: [`eval-results/comparison.md`](eval-results/comparison.md).

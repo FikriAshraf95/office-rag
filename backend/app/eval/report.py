@@ -32,7 +32,7 @@ def triage_hint(row: Row) -> str:
 
 def row_cost(meta: dict[str, Any], row: Row) -> float | None:
     if not row.get("model"):
-        return None
+        return 0.0  # the gate refused or the request failed before an answer call: nothing billed
     cost = cost_myr(meta["provider"], row["model"], row["prompt_tokens"], row["completion_tokens"])
     return float(cost) if cost is not None else None
 

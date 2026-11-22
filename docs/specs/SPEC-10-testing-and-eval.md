@@ -44,10 +44,10 @@ Vitest + jsdom + `@vue/test-utils`, colocated `*.test.ts`. No Playwright for the
    - partial (0.5): right core fact but a missing condition or weak wording.
    - wrong (0): wrong or outdated value, or a guess on a not-found question.
 4. **Source check:** expected source filenames (split on `;`, matched on the filename stem, case-insensitive) vs the cited documents' filenames. A `correct` verdict whose citations miss every expected source is downgraded to `partial`. Not-found questions pass the source check when `found = false`.
-5. Writes `eval-results/<YYYY-MM-DD>-<label>.json` (all rows) and `.md` (score /32, % by category, failures with reasons, p50/p95 latency, first-token p50, tokens and cost per question). `eval-results/` is committed (they're presentation material).
+5. Writes `eval-results/<YYYY-MM-DD>-<label>.json` (all rows) and `.md` (score /32, % by category, failures with reasons, p50/p95 latency, first-token p50, tokens and cost per question). The answer model in the report header is the one named in the answers' `done.model`, not the eval process's own settings. Cost per question is the answer cost from the price table: a gate refusal (`done.model` null, no answer call) costs 0, and a run on a plan-quota model has no cost figure. `eval-results/` is committed (they're presentation material).
 6. The judge's usage is logged with `purpose = 'eval'`. This is the eval process's only database use, and it goes through `providers` ([SPEC-01 §2](SPEC-01-architecture.md)), so the eval needs `DATABASE_URL`.
 
-**Model comparison (M99):** run with `LLM_ANSWER_MODEL` set to `nemo-super`, `ilmu-nemo-nano` and `ilmu-glm-5.3-flash` (separate API restarts) and produce one comparison table. Keep GLM runs to one full pass (PAYG balance).
+**Model comparison (M99):** run with `LLM_ANSWER_MODEL` set to `nemo-super`, `ilmu-nemo-nano` and `ilmu-glm-5.3-flash` (separate API restarts) and produce one comparison table. Keep GLM runs to one full pass (PAYG balance). Done 2026-11-22: [`eval-results/comparison.md`](../../eval-results/comparison.md).
 
 ## 6. Acceptance checks
 

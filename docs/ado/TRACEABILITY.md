@@ -30,13 +30,13 @@ Which spec sections implement each story, and which milestones build it. Keep th
 | **F1400** | **Access and security** | | |
 | 1401 | Restrict documents to groups | [SPEC-09 §3–4](../specs/SPEC-09-security-and-access.md) · [SPEC-04 §1](../specs/SPEC-04-retrieval.md) · [SPEC-08 §2](../specs/SPEC-08-api-contract.md) · [SPEC-07 §8](../specs/SPEC-07-frontend.md) | [M00](../milestones/done/M00-foundation.md), [M01](../milestones/done/M01-upload-and-documents.md), [M02](../milestones/done/M02-ingestion.md), [M03](../milestones/done/M03-retrieval.md), [M04](../milestones/done/M04-answering.md) |
 | 1402 | Only accept safe uploads | [SPEC-09 §2](../specs/SPEC-09-security-and-access.md) | [M01](../milestones/done/M01-upload-and-documents.md) |
-| 1403 | Protect keys and data | [SPEC-09 §1, §5–6](../specs/SPEC-09-security-and-access.md) | [M00](../milestones/done/M00-foundation.md), [M99](../milestones/M99-release-and-demo.md) |
+| 1403 | Protect keys and data | [SPEC-09 §1, §5–6](../specs/SPEC-09-security-and-access.md) | [M00](../milestones/done/M00-foundation.md), [M99](../milestones/done/M99-release-and-demo.md) |
 | 1404 | Ignore instructions hidden inside documents | [SPEC-09 §7](../specs/SPEC-09-security-and-access.md) · [SPEC-05 §2](../specs/SPEC-05-answering.md) | [M04](../milestones/done/M04-answering.md), [M05](../milestones/M05-frontend.md) |
 | **F1500** | **Answer quality, usage and cost** | | |
-| 1501 | Measure answer accuracy on a test set | [SPEC-10 §5](../specs/SPEC-10-testing-and-eval.md) | [M06](../milestones/done/M06-evaluation.md), [M99](../milestones/M99-release-and-demo.md) |
+| 1501 | Measure answer accuracy on a test set | [SPEC-10 §5](../specs/SPEC-10-testing-and-eval.md) | [M06](../milestones/done/M06-evaluation.md), [M99](../milestones/done/M99-release-and-demo.md) |
 | 1502 | Track AI usage and cost | [SPEC-06 §6](../specs/SPEC-06-ai-providers.md) · [SPEC-07 §7](../specs/SPEC-07-frontend.md) · [SPEC-08 §7](../specs/SPEC-08-api-contract.md) | [M04](../milestones/done/M04-answering.md), [M05](../milestones/M05-frontend.md) |
 | 1503 | Improve result ranking | [SPEC-04 §6](../specs/SPEC-04-retrieval.md) | [M08](../milestones/done/M08-reranker-and-reingest.md) |
 | **F1600** | **Platform and operations** | | |
-| 1601 | Run the whole system with one command | [SPEC-11 §1–4](../specs/SPEC-11-deployment.md) | [M99](../milestones/M99-release-and-demo.md) |
-| 1602 | Switch AI provider without code changes | [SPEC-06 §1, §7](../specs/SPEC-06-ai-providers.md) | [M00](../milestones/done/M00-foundation.md), [M99](../milestones/M99-release-and-demo.md) |
+| 1601 | Run the whole system with one command | [SPEC-11 §1–4](../specs/SPEC-11-deployment.md) | [M99](../milestones/done/M99-release-and-demo.md) |
+| 1602 | Switch AI provider without code changes | [SPEC-06 §1, §7](../specs/SPEC-06-ai-providers.md) | [M00](../milestones/done/M00-foundation.md), [M99](../milestones/done/M99-release-and-demo.md) |
 | 1603 | Public preview over the internet | [SPEC-11 §5](../specs/SPEC-11-deployment.md) | [M100](../milestones/M100-public-preview.md) |

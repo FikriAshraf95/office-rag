@@ -1,6 +1,6 @@
 # M06 — Evaluation
 
-> **Depends on:** [M04](M04-answering.md) · **Blocks:** [M99](../M99-release-and-demo.md)
+> **Depends on:** [M04](M04-answering.md) · **Blocks:** [M99](M99-release-and-demo.md)
 > **Read first:** [SPEC-10 §5–6](../../specs/SPEC-10-testing-and-eval.md#5-eval-script) · [SPEC-08 §6](../../specs/SPEC-08-api-contract.md#6-chat) · [SPEC-05 §6](../../specs/SPEC-05-answering.md#6-sse-events)
 > **Model:** Sonnet. A script against a fixed API and a clear scoring rule.
 

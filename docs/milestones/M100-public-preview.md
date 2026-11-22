@@ -1,6 +1,6 @@
 # M100 — Public preview via Cloudflare Tunnel *(after the presentation)*
 
-> **Depends on:** [M99](M99-release-and-demo.md) · **Blocks:** —
+> **Depends on:** [M99](done/M99-release-and-demo.md) · **Blocks:** —
 > **Read first:** [SPEC-11 §5–6](../specs/SPEC-11-deployment.md#5-public-preview-via-cloudflare-tunnel-m100) · [SPEC-09 §3, §6](../specs/SPEC-09-security-and-access.md#3-identity-demo) · [SPEC-08 §2](../specs/SPEC-08-api-contract.md#2-error-shape) · [SPEC-07 §8](../specs/SPEC-07-frontend.md#8-demo-identity)
 > **Model:** Opusplan. Authentication and exposure to the internet: get the JWT checks and the admin/rate-limit boundaries right. Write `M100-plan.md` first.
 

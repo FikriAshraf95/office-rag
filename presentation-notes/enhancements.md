@@ -8,7 +8,8 @@ Status: **Idea** → **Planned** (has a milestone or task) → **Done** (date, w
 |---|---|---|---|---|
 | E1 | [Add ADO story IDs to the specs and milestones](#e1--add-ado-story-ids-to-the-specs-and-milestones) | Idea | ~30 min | Before M00 starts, or during M99 |
 | E2 | [Connect Claude Code to Azure DevOps through MCP](#e2--connect-claude-code-to-azure-devops-through-mcp) | Idea | ½–1 day | After the presentation (it would make a good demo slide if done earlier) |
-| E3 | [Full dev container for the team](#e3--full-dev-container-for-the-team) | Idea | ½ day | When other developers adopt the template |
+| E3 | [Full dev container for the team](#e3--full-dev-container-for-the-team) | Done (2026-11-22, `docker-compose.dev.yml`; no VS Code devcontainer yet) | ½ day | When other developers adopt the template |
+| E4 | [Keep a topic change from tripping the gate](#e4--keep-a-topic-change-from-tripping-the-gate) | Idea | ½ day | After the presentation |
 
 ---
 
@@ -72,3 +73,18 @@ Status: **Idea** → **Planned** (has a milestone or task) → **Done** (date, w
 **Watch out:** on Windows, keep the repo **inside the WSL2 filesystem**. Docker Desktop bind mounts from `D:\` are slow, and file watching for `--reload` and Vite gets unreliable.
 
 **Done when:** a new developer clones, opens the folder in the dev container, and runs the backend tests and frontend build without installing anything else.
+
+---
+
+## E4 — Keep a topic change from tripping the gate
+
+**Added:** 2026-11-22 (M99 rehearsal) · **Status:** Idea
+
+**Why:** retrieval searches with `"<previous question>\n<question>"` ([SPEC-05 §1](../docs/specs/SPEC-05-answering.md)) so a follow-up like "and for managers?" keeps its subject. When the user changes topic, the old question dilutes the new one. In the rehearsal, *"How many days a week must I work from the office?"* asked right after *"What is the salary band for an M2 manager?"* came back not-found; asked in a new chat, it was answered.
+
+**What (options):**
+1. Search twice when history is present (with and without the previous question) and keep the better-gated result. Costs one extra embed + rerank (≈ MYR 0.0002).
+2. Use the previous question only when the new one looks like a follow-up (short, starts with "and", "what about", has a pronoun and no noun of its own).
+3. Turn on `QUERY_REWRITE` with the `fast` model to write a standalone query.
+
+**Done when:** a SPEC-05 check covers "unrelated follow-up is still found", and the eval gains two follow-up questions (one related, one topic change) without losing points.

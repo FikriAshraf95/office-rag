@@ -12,6 +12,7 @@ import asyncio
 import csv
 import json
 import sys
+from collections import Counter
 from collections.abc import AsyncIterator
 from dataclasses import asdict, dataclass, field
 from datetime import date
@@ -170,12 +171,14 @@ async def run(client: ApiClient, user: str, label: str, only: set[str], out_dir:
         rows.append(row)
         print(f"{row.id:<4} {row.verdict:<8} {row.latency_ms or '-'} ms  {row.judge_reason[:80]}", flush=True)
     settings = get_settings()
+    # The API that answered may run another model than this process's settings name; trust the answers.
+    answered = Counter(r.model for r in rows if r.model)
     meta = {
         "label": label,
         "date": date.today().isoformat(),
         "user": user,
         "provider": settings.ai_provider,
-        "answerModel": settings.llm_answer_model,
+        "answerModel": answered.most_common(1)[0][0] if answered else settings.llm_answer_model,
         "judgeModel": judge_model.model,
         "total": len(rows),
     }

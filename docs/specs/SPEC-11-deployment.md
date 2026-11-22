@@ -18,7 +18,7 @@ All config comes from `.env` (via `env_file`). Ports bind to loopback only.
 - **backend** (multi-stage, `python:3.14-slim`, `uv`):
   - `base`: `uv sync --frozen --no-dev` without the `worker` dependency group.
   - `api`: from `base`.
-  - `worker`: from `base` + `uv sync --group worker` (Docling, CPU-only `torch` from the PyTorch CPU index) + `docling-tools models download` (layout, tableformer, RapidOCR) and the `BAAI/bge-m3` tokenizer into `/models`, with `DOCLING_ARTIFACTS_PATH=/models` and `HF_HUB_OFFLINE=1`. No model downloads at runtime.
+  - `worker`: from `base` + `uv sync --group worker` (Docling, CPU-only `torch` from the PyTorch CPU index) + `docling-tools models download` (layout, tableformer, RapidOCR) into `/models/docling` and the `BAAI/bge-m3` tokenizer into the Hugging Face cache at `/models/hf`, with `DOCLING_ARTIFACTS_PATH=/models/docling`, `HF_HOME=/models/hf` and `HF_HUB_OFFLINE=1` set after the download step. No model downloads at runtime. The compose file pins `DOCLING_ARTIFACTS_PATH` and `HF_HUB_OFFLINE` for the worker, so a host value in `.env` can't point it elsewhere.
 - **frontend**: `node:22-alpine` build → `nginx:alpine` with `nginx/default.conf` (copy from Office Suite `frontend/nginx/`, adjust upstream; CSP `default-src 'self'; img-src 'self' blob: data:; worker-src 'self' blob:` for pdf.js).
 
 ## 3. Environment (`.env.example`)
@@ -60,8 +60,8 @@ AUTH_MODE=demo
 # XLSX_ROWS_PER_CHUNK=20
 # EMBED_BATCH=64
 # OCR_MIN_CHARS=80
-# TOKENIZER_ID=BAAI/bge-m3      # tokenizer for chunk sizing; cached in /models in the worker image
-# DOCLING_ARTIFACTS_PATH=       # Docling models dir; /models in the worker image, unset = Hugging Face cache
+# TOKENIZER_ID=BAAI/bge-m3      # tokenizer for chunk sizing; cached in /models/hf in the worker image
+# DOCLING_ARTIFACTS_PATH=       # Docling models dir; /models/docling in the worker image, unset = Hugging Face cache
 ```
 
 `.env.example` lists every setting the app reads ([SPEC-09 §5](SPEC-09-security-and-access.md)); a new setting is added here in the same change.
@@ -77,14 +77,15 @@ Inside Compose, `DATABASE_URL` points at `postgres:5432` and `STORAGE_DIR=/data/
 4. Wait for all rows to show **Ready**; check the 2024 handbook shows **Superseded**.
 5. Ask the example questions in Chat.
 
-**Local dev** (hybrid: Postgres in Docker, API, worker and frontend on the host; decided 2026-11-19)
-- One-time: `uv python install 3.14` (uv-managed; the system Python is untouched; `backend/.python-version` selects it)
-- `docker compose up -d postgres`
-- Backend: `cd backend && uv sync --all-groups && uv run alembic upgrade head && uv run uvicorn app.main:app --reload --port 8000`
-- Worker: `cd backend && uv run python -m app.ingestion.worker`
-- Frontend: `cd frontend && npm ci && npm run dev` → `http://localhost:5173`
+**Local dev** (dev container, 2026-11-22; replaces the hybrid host setup of 2026-11-19. Nothing is installed on the Windows host)
+- `docker-compose.dev.yml` runs Postgres (listening on 5433) and a `dev` container (`Dockerfile.dev`: Python 3.14 + uv, Node 22). The repo is bind-mounted at `/workspace`; the venv, `node_modules` and the uv, npm and Hugging Face caches live in named volumes. `dev` shares Postgres's network namespace, so `localhost:5433`, `:8000` and `:5173` behave as on a host. Stop the full-stack compose first (same ports).
+- `docker compose -f docker-compose.dev.yml up -d`, then run each command as `docker compose -f docker-compose.dev.yml exec dev sh -c "cd backend && …"` (the full list is in the root `CLAUDE.md`).
+- Backend: `uv sync --all-groups && uv run alembic upgrade head && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000`; worker: `uv run python -m app.ingestion.worker`; frontend: `npm ci && npm run dev -- --host 0.0.0.0` → `http://localhost:5173`.
+- The Docling tests run offline, so a new Hugging Face cache volume needs one warm-up: parse any PDF once outside pytest with `HF_HUB_OFFLINE=0`.
 
-**Eval:** `cd backend && uv run python -m app.eval --base-url http://localhost:8000 --user ben --label nemo-super`
+**Eval:** against the dev API, `uv run python -m app.eval --base-url http://localhost:8000 --user ben --label nemo-super`. Against the full stack, from the API image (inside the image the repo root is `/`): `docker compose run --rm --no-deps -v "$PWD/samples:/samples:ro" -v "$PWD/eval-results:/eval-results" api python -m app.eval --base-url http://api:8000 --user ben --label <name>`. To compare answer models, override `LLM_ANSWER_MODEL` for the `api` service only; the report takes the model name from the answers.
+
+**Release check:** `bash scripts/release_check.sh` on the running full stack, after uploading the documents (§6 checks 1–4).
 
 **Reset demo data:** `docker compose down -v` (drops DB and storage volumes).
 
@@ -116,6 +117,8 @@ browser ──HTTPS──▶ Cloudflare edge (Access login) ──tunnel──�
 - New env vars (`CF_ACCESS_TEAM_DOMAIN`, `CF_ACCESS_AUD`, `ACCESS_USERS`, `ADMIN_EMAILS`, `TUNNEL_TOKEN`, `CHAT_RATE_PER_MIN`, `CHAT_DAILY_CAP`, `PAYG_ALERT_MYR`) go in `.env.example`, with no values. New error codes go in [SPEC-08 §2](SPEC-08-api-contract.md#2-error-shape) in the same change.
 
 ## 6. Acceptance checks
+
+Checks 1–4 are covered twice: statically in `backend/tests/spec11/test_deployment.py` (compose file, Dockerfiles, nginx, repo; part of the normal suite) and live in `scripts/release_check.sh` (running stack, the worker image started with `--network none`, image history, config and filesystem).
 
 1. On a clean clone with `.env` set, `docker compose up -d --build` reaches healthy `postgres`, `api`, `frontend` and a running `worker`; `GET http://localhost:8080/health` returns ok.
 2. SSE through nginx streams deltas as they arrive (no buffering): first delta visible in the browser before `done`.

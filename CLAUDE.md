@@ -16,7 +16,7 @@ To read a spec section, run `grep -n '^## ' <spec>` to find its line range, then
 
 ## Status
 
-Specs v1 written (2026-11-19). M00–M03 implemented (2026-11-20) and M04–M08 (2026-11-21), awaiting human review. Eval 28/32 on nemo-super with the reranker on (26 without; baseline 25, target 26; reports in `eval-results/`). **Next: [M99 Release and demo](docs/milestones/M99-release-and-demo.md)** (Opus).
+Specs v1 written (2026-11-19). M00–M03 implemented (2026-11-20), M04–M08 (2026-11-21) and [M99](docs/milestones/done/M99-release-and-demo.md) (2026-11-22), awaiting human review. Full stack verified with `scripts/release_check.sh`; demo script rehearsed. Eval 28.5/32 on nemo-super with the reranker on (baseline 25, target 26; model comparison in `eval-results/comparison.md`). No open deviations. **Next: the presentation (2026-11-26), then [M100 Public preview](docs/milestones/M100-public-preview.md)** (Opusplan).
 
 When a milestone is done: tick its boxes, set **Status** to `DONE (date)` + how acceptance was verified + deviations (`D003, D004` or "Deviations: none"), then move it and its plan file to `docs/milestones/done/` and update this line.
 
