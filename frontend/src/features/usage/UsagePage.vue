@@ -64,6 +64,9 @@ const ingestionStats = computed(() => {
       <Skeleton class="h-40 w-full" />
     </div>
     <Banner v-else-if="error" tone="danger">{{ error }}</Banner>
+    <Banner v-if="summary?.balances.paygLow" tone="warning" data-testid="payg-low">
+      The PAYG balance is low. Top it up before the AI service starts refusing questions.
+    </Banner>
     <EmptyState
       v-else-if="empty"
       :icon="ChartColumn"

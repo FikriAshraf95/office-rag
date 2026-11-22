@@ -1,7 +1,7 @@
 # M00 — Foundation and contracts
 
 > **Depends on:** — · **Blocks:** everything
-> **Read first:** [SPEC-00 §6](../specs/SPEC-00-overview.md#6-global-conventions) · [SPEC-01 (whole file)](../specs/SPEC-01-architecture.md) · [SPEC-02 (whole file)](../specs/SPEC-02-database-schema.md) · [SPEC-08 §1–3](../specs/SPEC-08-api-contract.md#1-endpoint-index) · [SPEC-06 §1–2, §5–6](../specs/SPEC-06-ai-providers.md#1-provider-profile-env) · [SPEC-09 §3, §5–6](../specs/SPEC-09-security-and-access.md#3-identity-demo) · [SPEC-10 §2–3](../specs/SPEC-10-testing-and-eval.md#2-backend-test-host) · [SPEC-11 §1, §3](../specs/SPEC-11-deployment.md#1-services-docker-composeyml) · [SPEC-07 §1–3](../specs/SPEC-07-frontend.md#1-stack)
+> **Read first:** [SPEC-00 §6](../specs/SPEC-00-overview.md#6-global-conventions) · [SPEC-01 (whole file)](../specs/SPEC-01-architecture.md) · [SPEC-02 (whole file)](../specs/SPEC-02-database-schema.md) · [SPEC-08 §1–3](../specs/SPEC-08-api-contract.md#1-endpoint-index) · [SPEC-06 §1–2, §5–6](../specs/SPEC-06-ai-providers.md#1-provider-profile-env) · [SPEC-09 §3, §5–6](../specs/SPEC-09-security-and-access.md#3-identity) · [SPEC-10 §2–3](../specs/SPEC-10-testing-and-eval.md#2-backend-test-host) · [SPEC-11 §1, §3](../specs/SPEC-11-deployment.md#1-services-docker-composeyml) · [SPEC-07 §1–3](../specs/SPEC-07-frontend.md#1-stack)
 > **Model:** Opus. Every later milestone builds on these contracts. **Human review after.**
 
 ## Goal

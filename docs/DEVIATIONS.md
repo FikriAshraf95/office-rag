@@ -49,6 +49,7 @@ Open deviations are folded into the specs at M99 (and whenever one spec collects
 
 | # | Title | Milestone | Spec | Status |
 |---|---|---|---|---|
+| [D010](deviations/D010-public-preview-details.md) | Public preview uses the app's own password login instead of Cloudflare Access (plus limit and API details) | M100 | SPEC-11 §3–6; SPEC-09 §3, §6; SPEC-08 §1–3, §7; SPEC-07 §8 | Resolved → spec updated |
 | [D009](deviations/D009-vision-instruction-line-format.md) | Vision instruction fixes the org-chart line format and asks for free-standing labels | M07 | SPEC-03 §8 | Resolved → spec updated |
 | [D008](deviations/D008-vision-and-summary-details.md) | Vision fallback covers standalone images only; summary and tags are best-effort | M07 | SPEC-03 §8 | Resolved → spec updated |
 | [D007](deviations/D007-eval-http-client-in-providers.md) | The eval script gets its HTTP client from `providers/api_client.py` | M06 | SPEC-01 §2 | Resolved → spec updated |

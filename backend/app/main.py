@@ -7,12 +7,13 @@ import structlog
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
-from app.api import chat, documents, health, search, usage
+from app.api import auth, chat, documents, health, search, usage
 from app.api.errors import INTERNAL_DETAIL, TraceIdMiddleware, install_error_handlers, problem
 from app.api.schemas import ProblemOut
 from app.config import check_startup, get_settings
 from app.log import configure_logging
 from app.providers.errors import ProviderError, user_message
+from app.security.limits import ChatLimiter, LoginLimiter
 
 log = structlog.get_logger()
 
@@ -38,7 +39,12 @@ async def provider_error_handler(request: Request, exc: Exception) -> JSONRespon
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     settings = get_settings()
-    log.info("api_started", app_env=settings.app_env, ai_provider=settings.ai_provider)
+    log.info(
+        "api_started",
+        app_env=settings.app_env,
+        ai_provider=settings.ai_provider,
+        auth_mode=settings.auth_mode,
+    )
     yield
 
 
@@ -53,10 +59,13 @@ def create_app(*, guards: bool = True) -> FastAPI:
         lifespan=lifespan,
         responses={"default": {"model": ProblemOut, "description": "application/problem+json"}},
     )
+    app.state.chat_limiter = ChatLimiter(get_settings().chat_rate_per_min)
+    app.state.login_limiter = LoginLimiter()
     app.add_middleware(TraceIdMiddleware)
     install_error_handlers(app)
     app.add_exception_handler(ProviderError, provider_error_handler)
     app.include_router(health.router)
+    app.include_router(auth.router)
     app.include_router(documents.router)
     app.include_router(documents.upload_router)
     app.include_router(search.router)

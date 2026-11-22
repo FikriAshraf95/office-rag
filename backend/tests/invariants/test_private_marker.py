@@ -24,6 +24,9 @@ from app.ingestion.types import ChunkDraft, DocMeta, IngestResult
 from app.ingestion.worker import process_one_job
 from app.providers.registry import Providers
 from tests.helpers import PRIVATE_MARKER
+from tests.login import ADMIN as LOGIN_ADMIN
+from tests.login import STAFF as LOGIN_STAFF
+from tests.login import LoginClient
 from tests.uploads import upload
 
 FIXTURE = Path(__file__).resolve().parents[1] / "fixtures" / "private_salary_bands.md"
@@ -159,3 +162,43 @@ async def test_private_marker_absent_for_ben_on_chat_and_question_rows(
         written = json.dumps([row.answer, row.sources, row.model, row.error_code])
         assert PRIVATE_MARKER not in written
         assert "Salary bands" not in written
+
+
+async def test_private_marker_absent_for_non_member_login_user(
+    login_client: LoginClient,
+    sessions: async_sessionmaker[AsyncSession],
+    providers: Providers,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """M100: in `password` mode a signed-in non-member (and a demo header naming a member)
+    sees neither marker nor title on documents, search or chat."""
+    marker_text = FIXTURE.read_text(encoding="utf-8")
+
+    def extract_marker(*_: Any, **__: Any) -> IngestResult:
+        return IngestResult([ChunkDraft("text", marker_text, ["Salary bands"], 10)], DocMeta(language="en"))
+
+    monkeypatch.setattr(extraction, "extract", extract_marker)
+    monkeypatch.setattr(get_settings(), "min_vector_sim", 0.0)
+    async with login_client(LOGIN_ADMIN) as admin:
+        resp = await upload(
+            admin, FIXTURE.read_bytes(), "private_salary_bands.md", title="Salary bands", accessGroups=["hr"]
+        )
+        assert resp.status_code == 202, resp.text
+        doc_id = resp.json()["id"]
+        await process_one_job(sessions, get_settings(), providers, WhitespaceCounter(), "w")
+        member = await admin.post("/api/v1/search", json={"query": PRIVATE_MARKER})
+        assert PRIVATE_MARKER in member.text  # sanity: the member finds it
+
+    async with login_client(LOGIN_STAFF, headers={"X-Demo-User": "aisyah"}) as staff:
+        responses = [
+            await staff.get("/api/v1/documents"),
+            await staff.get(f"/api/v1/documents/{doc_id}"),
+            await staff.get(f"/api/v1/documents/{doc_id}/file"),
+            await staff.get(f"/api/v1/documents/{doc_id}/chunks"),
+            await staff.post("/api/v1/search", json={"query": PRIVATE_MARKER}),
+            await staff.post("/api/v1/chat", json={"question": "What are the salary bands?"}),
+            await staff.post("/api/v1/chat", json={"question": PRIVATE_MARKER}),
+        ]
+    for resp in responses:
+        assert PRIVATE_MARKER not in resp.text, resp.request.url
+        assert "Salary bands" not in resp.text, resp.request.url

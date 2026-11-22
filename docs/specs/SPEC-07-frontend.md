@@ -116,8 +116,9 @@ Each feature owns its `api.ts`, typed from the generated `src/api/schema.d.ts` (
 - Table by model × purpose: calls, prompt tokens, completion tokens, cost (MYR or "plan quota").
 - Latest balances: plan tokens left, PAYG MYR left (from the provider headers), with the time read.
 
-## 8. Demo identity
-- Top-bar `Select` lists demo users from `GET /config` (e.g. *Aisyah (HR)*, *Ben (Staff)*). `/config` is the one `/api/v1` call made without `X-Demo-User`, because it runs before a user is chosen. The choice is stored in `localStorage` and sent as `X-Demo-User` on every request ([SPEC-09 §3](SPEC-09-security-and-access.md)). Changing user clears the chat thread and reloads documents.
+## 8. Identity
+- **Demo mode** (`authMode: "demo"` in `/config`): the top-bar `Select` lists demo users from `GET /config` (e.g. *Aisyah (HR)*, *Ben (Staff)*). `/config` is the one `/api/v1` call made without `X-Demo-User`, because it runs before a user is chosen. The choice is stored in `localStorage` and sent as `X-Demo-User` on every request ([SPEC-09 §3](SPEC-09-security-and-access.md)). Changing user clears the chat thread and reloads documents. Every demo user is an admin.
+- **Password mode** (`authMode: "password"`, M100, [SPEC-11 §5.2](SPEC-11-deployment.md#52-authentication-password-login)): no switcher and no `X-Demo-User`. `App.vue` waits for `/config`, then `GET /me`. With no session (401) it shows `features/auth/LoginPage.vue` (username, password with show/hide, one error banner) instead of the shell. A 401 `unknown_user` from any later call returns to it (`http.ts` `onSignedOut` hook, no toast). The top bar shows the user's name and **Sign out** (`POST /auth/logout`). When `/me` says `isAdmin: false`, the upload panel, the document actions (edit, re-ingest, status, replace, delete, Retry) and the Usage nav entry are hidden. The API enforces the same rule (403 `admin_only`).
 
 ## 9. Accessibility and states
 - Every page has loading (Skeleton rows), empty, error and success states. No spinners in tables except the processing pill icon.

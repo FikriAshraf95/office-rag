@@ -6,16 +6,18 @@ from collections.abc import AsyncGenerator, AsyncIterator
 from typing import Annotated
 
 import anyio
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.answering.service import Event, Turn, answer_stream
 from app.api.errors import ApiError
 from app.api.schemas import SSE_EVENTS, ChatIn
+from app.config import Settings, get_settings
 from app.db.engine import get_session
 from app.retrieval.search import MAX_QUERY_CHARS
 from app.security.identity import CurrentUser
+from app.security.limits import ChatLimiter, enforce_chat_limits
 
 router = APIRouter(prefix="/api/v1", tags=["chat"])
 
@@ -67,7 +69,13 @@ async def sse(events: AsyncGenerator[Event], ping_seconds: float = PING_SECONDS)
         200: {"content": {"text/event-stream": {}}, "description": "SSE: meta, sources, delta*, done | error"}
     },
 )
-async def chat(body: ChatIn, session: Session, user: CurrentUser) -> StreamingResponse:
+async def chat(
+    body: ChatIn,
+    request: Request,
+    session: Session,
+    settings: Annotated[Settings, Depends(get_settings)],
+    user: CurrentUser,
+) -> StreamingResponse:
     question = body.question.strip()
     if len(question) > MAX_QUERY_CHARS:
         raise ApiError(
@@ -77,6 +85,8 @@ async def chat(body: ChatIn, session: Session, user: CurrentUser) -> StreamingRe
         raise ApiError(
             422, "validation_failed", "Some fields are not valid.", errors={"question": ["Type a question."]}
         )
+    limiter: ChatLimiter = request.app.state.chat_limiter
+    await enforce_chat_limits(session, user, settings, limiter)
     history = [Turn(t.question, t.answer) for t in body.history]
     return StreamingResponse(
         sse(answer_stream(session, question, user, history)),

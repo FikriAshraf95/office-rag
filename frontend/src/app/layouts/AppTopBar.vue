@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
-import { Menu, Monitor, Moon, Sun, X } from 'lucide-vue-next'
+import { LogOut, Menu, Monitor, Moon, Sun, X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -16,8 +16,9 @@ import { applyTheme, isThemeChoice, readStoredTheme, type ThemeChoice } from '@/
 import { useUserStore } from '@/stores/user'
 
 /**
- * The top bar over the content column (SPEC-07 §3, §8): the demo user switcher and the theme
- * toggle on the right. Phones: the menu button and org name on the left.
+ * The top bar over the content column (SPEC-07 §3, §8): the demo user switcher (or, in password
+ * mode, the signed-in user and Sign out) and the theme toggle on the right. Phones: the menu button
+ * and org name on the left.
  */
 const drawerOpen = defineModel<boolean>('drawerOpen', { default: false })
 const user = useUserStore()
@@ -57,8 +58,16 @@ const themeIcon = computed(() => (theme.value === 'dark' ? Moon : theme.value ==
 
     <Skeleton v-if="user.loading && !user.config" class="h-(--control-h) w-44" />
     <p v-else-if="user.error" class="text-caption text-danger" role="alert">
-      Can't load demo users. Check that the API is running, then reload.
+      {{
+        user.isPassword ? user.error : "Can't load demo users. Check that the API is running, then reload."
+      }}
     </p>
+    <span
+      v-else-if="user.isPassword && user.me"
+      class="min-w-0 truncate text-caption text-ink-muted max-md:hidden"
+      data-testid="signed-in-user"
+      >{{ user.me.name }}</span
+    >
     <Select
       v-else-if="user.demoUsers.length"
       v-model="selected"
@@ -68,6 +77,10 @@ const themeIcon = computed(() => (theme.value === 'dark' ? Moon : theme.value ==
     >
       <option v-for="u in user.demoUsers" :key="u.id" :value="u.id">{{ u.name }}</option>
     </Select>
+
+    <Button v-if="user.isPassword" variant="ghost" size="sm" data-testid="sign-out" @click="user.logout()">
+      <LogOut aria-hidden="true" /> Sign out
+    </Button>
 
     <DropdownMenu>
       <DropdownMenuTrigger as-child>

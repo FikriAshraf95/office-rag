@@ -117,6 +117,71 @@
         }
       }
     },
+    "/api/v1/auth/login": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Login",
+        "operationId": "login_api_v1_auth_login_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MeOut"
+                }
+              }
+            }
+          },
+          "default": {
+            "description": "application/problem+json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/logout": {
+      "post": {
+        "tags": [
+          "auth"
+        ],
+        "summary": "Logout",
+        "operationId": "logout_api_v1_auth_logout_post",
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "default": {
+            "description": "application/problem+json",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemOut"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/documents": {
       "get": {
         "tags": [
@@ -965,13 +1030,18 @@
               }
             ],
             "title": "Readat"
+          },
+          "paygLow": {
+            "type": "boolean",
+            "title": "Payglow"
           }
         },
         "type": "object",
         "required": [
           "planTokens",
           "paygMyr",
-          "readAt"
+          "readAt",
+          "paygLow"
         ],
         "title": "BalancesOut",
         "description": "Latest `x-ilmu-token-balance` / `x-ilmu-payg-balance-myr` this API process has seen."
@@ -1254,6 +1324,14 @@
           "orgName": {
             "type": "string",
             "title": "Orgname"
+          },
+          "authMode": {
+            "type": "string",
+            "enum": [
+              "demo",
+              "password"
+            ],
+            "title": "Authmode"
           }
         },
         "type": "object",
@@ -1263,7 +1341,8 @@
           "demoUsers",
           "accessGroups",
           "docTypes",
-          "orgName"
+          "orgName",
+          "authMode"
         ],
         "title": "ConfigOut"
       },
@@ -1656,6 +1735,28 @@
         ],
         "title": "IngestionStatsOut"
       },
+      "LoginIn": {
+        "properties": {
+          "username": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Username"
+          },
+          "password": {
+            "type": "string",
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Password"
+          }
+        },
+        "type": "object",
+        "required": [
+          "username",
+          "password"
+        ],
+        "title": "LoginIn"
+      },
       "MeOut": {
         "properties": {
           "id": {
@@ -1672,13 +1773,18 @@
             },
             "type": "array",
             "title": "Groups"
+          },
+          "isAdmin": {
+            "type": "boolean",
+            "title": "Isadmin"
           }
         },
         "type": "object",
         "required": [
           "id",
           "name",
-          "groups"
+          "groups",
+          "isAdmin"
         ],
         "title": "MeOut"
       },

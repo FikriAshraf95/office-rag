@@ -37,6 +37,7 @@ const navClass = computed(() =>
 )
 const navActive =
   'bg-surface-selected font-medium text-brand-ink hover:bg-surface-selected before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-brand'
+const visibleNav = computed(() => navigation.filter((item) => !item.adminOnly || user.isAdmin))
 const isCurrent = (item: NavItem) =>
   route.name === item.routeName || (item.alsoActiveFor ?? []).includes(String(route.name))
 </script>
@@ -72,7 +73,7 @@ const isCurrent = (item: NavItem) =>
 
       <nav class="relative flex flex-1 flex-col gap-0.5 overflow-y-auto px-2 py-2" data-testid="main-nav">
         <RouterLink
-          v-for="item in navigation"
+          v-for="item in visibleNav"
           :key="item.routeName"
           :to="{ name: item.routeName }"
           :class="[navClass, isCurrent(item) && navActive]"

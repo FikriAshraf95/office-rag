@@ -42,7 +42,8 @@ class UsageRecorder:
     Tests bind it to the test connection (savepoint) so the rows roll back with the test.
     """
 
-    def __init__(self, bind: AsyncEngine | AsyncConnection) -> None:
+    def __init__(self, bind: AsyncEngine | AsyncConnection, payg_alert_myr: float = 0.0) -> None:
+        self.payg_alert_myr = Decimal(str(payg_alert_myr))
         if isinstance(bind, AsyncConnection):
             self._sessions = async_sessionmaker(
                 bind, expire_on_commit=False, join_transaction_mode="create_savepoint"
@@ -87,6 +88,11 @@ class UsageRecorder:
                 LATEST_BALANCES.values[key] = value
                 LATEST_BALANCES.read_at = datetime.now(UTC)
                 log.info("provider_balance", **{key: value})
+        payg = LATEST_BALANCES.payg_myr
+        if "x-ilmu-payg-balance-myr" in headers and payg is not None and payg < self.payg_alert_myr:
+            log.warning(
+                "payg_balance_low", payg_balance_myr=str(payg), alert_below_myr=str(self.payg_alert_myr)
+            )
 
 
 @dataclass(slots=True)

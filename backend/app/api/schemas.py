@@ -31,12 +31,19 @@ class ConfigOut(CamelModel):
     access_groups: list[str]
     doc_types: list[str]
     org_name: str
+    auth_mode: Literal["demo", "password"]
+
+
+class LoginIn(CamelModel):
+    username: str = Field(min_length=1, max_length=100)
+    password: str = Field(min_length=1, max_length=200)
 
 
 class MeOut(CamelModel):
     id: str
     name: str
     groups: list[str]
+    is_admin: bool
 
 
 class ProblemOut(CamelModel):
@@ -254,6 +261,7 @@ class BalancesOut(CamelModel):
     plan_tokens: int | None
     payg_myr: float | None
     read_at: datetime | None
+    payg_low: bool
 
 
 class UsageSummaryOut(CamelModel):

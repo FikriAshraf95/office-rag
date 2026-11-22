@@ -1,6 +1,7 @@
 """Endpoint 14: usage and cost totals, balances (SPEC-08 §7)."""
 
 from datetime import datetime
+from decimal import Decimal
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
@@ -13,9 +14,10 @@ from app.api.schemas import (
     UsageByModelOut,
     UsageSummaryOut,
 )
+from app.config import Settings, get_settings
 from app.db.engine import get_session
 from app.providers.usage import summary
-from app.security.identity import CurrentUser
+from app.security.identity import AdminUser
 
 router = APIRouter(prefix="/api/v1", tags=["usage"])
 
@@ -25,7 +27,8 @@ Session = Annotated[AsyncSession, Depends(get_session)]
 @router.get("/usage/summary", response_model=UsageSummaryOut)
 async def usage_summary(
     session: Session,
-    user: CurrentUser,
+    user: AdminUser,
+    settings: Annotated[Settings, Depends(get_settings)],
     start: Annotated[datetime | None, Query(alias="from")] = None,
     end: Annotated[datetime | None, Query(alias="to")] = None,
 ) -> UsageSummaryOut:
@@ -57,5 +60,6 @@ async def usage_summary(
             plan_tokens=s.balances.plan_tokens,
             payg_myr=float(payg) if payg is not None else None,
             read_at=s.balances.read_at,
+            payg_low=payg is not None and payg < Decimal(str(settings.payg_alert_myr)),
         ),
     )

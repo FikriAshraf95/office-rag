@@ -16,12 +16,12 @@
 - Filename: keep the base name only, NFC normalize, replace anything outside `[A-Za-z0-9._ -]` with `_`, cap at 120 characters. The stored path is `<document id>/<sanitized name>`; the user never controls a path.
 - Files are served back only through `GET /documents/{id}/file`, with `nosniff` and the stored content type.
 
-## 3. Identity (demo)
+## 3. Identity
 
 - `security/identity.py` reads `X-Demo-User` and looks it up in `DEMO_USERS` (env JSON): `{"aisyah": {"name": "Aisyah (HR)", "groups": ["all", "hr"]}, "ben": {"name": "Ben (Staff)", "groups": ["all"]}}`. Unknown or missing → 401 `unknown_user`. The one exception is `GET /api/v1/config`, which is public and returns no document data.
 - This is a stand-in for SSO. Replacing it is one module: `get_identity()` returns `Identity(id, name, groups, is_admin)` from the SSO token instead. **Every route gets the user only through the `get_identity` dependency**; nothing else reads identity headers.
-- `AUTH_MODE` selects the source: `demo` (this section, the default) or `cloudflare_access` (M100, [SPEC-11 §5](SPEC-11-deployment.md#5-public-preview-via-cloudflare-tunnel-m100)). From M00, `Identity` carries `is_admin` (true for every demo user), so M100 only changes who gets it.
-- Upload, patch and delete are open to every demo user (no admin role in the MVP); `accessGroups` on upload/patch must be a subset of the caller's groups.
+- `AUTH_MODE` selects the source: `demo` (this section, the default) or `password` (M100, [SPEC-11 §5.2](SPEC-11-deployment.md#52-authentication-password-login)), which signs users in with a username and password from `LOGIN_USERS`, reads only the `rag_session` cookie and never reads `X-Demo-User`. `Identity.is_admin` is true for every demo user; in password mode only for users with `admin: true`.
+- Upload, replace file, patch, delete, re-ingest and `/usage/summary` go through the `require_admin` dependency (`AdminUser`) → 403 `admin_only`. It runs before any document lookup, so a non-admin learns nothing about which ids exist. Every demo user passes it. `accessGroups` on upload/patch must be a subset of the caller's groups.
 
 ## 4. Private-marker invariant
 
@@ -38,7 +38,8 @@
 ## 6. Startup guards
 
 - `APP_ENV=production` with `AI_PROVIDER=fake` → exit with "Fake AI provider is not allowed in production."
-- `APP_ENV=production` with `AUTH_MODE=demo` → exit with "Demo identity is not allowed in production. Set AUTH_MODE." (`AUTH_MODE` exists from M00; the `cloudflare_access` mode arrives in M100.)
+- `APP_ENV=production` with `AUTH_MODE=demo` → exit with "Demo identity is not allowed in production. Set AUTH_MODE."
+- `AUTH_MODE=password` without `LOGIN_USERS`, with a `SESSION_SECRET` shorter than 32 characters, or with a user whose `passwordHash` is not a `scrypt:` hash → exit naming the variable (M100).
 - Missing `AI_API_KEY` with a real provider → exit with a message naming the variable.
 
 ## 7. Prompt injection

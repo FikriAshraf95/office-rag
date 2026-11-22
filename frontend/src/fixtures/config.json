@@ -7,5 +7,6 @@
   ],
   "accessGroups": ["all", "hr"],
   "docTypes": ["policy", "handbook", "memo", "sop", "spreadsheet", "notice", "chart", "other"],
-  "orgName": "Serimaju"
+  "orgName": "Serimaju",
+  "authMode": "demo"
 }

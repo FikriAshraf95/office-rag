@@ -128,7 +128,7 @@ These apply everywhere. A rule here beats any other spec, and a conflict is a de
 | Mon 23 | M04, M05 |
 | Tue 24 | M06 baseline eval, M07 (vision) |
 | Wed 25 | M08 if time, M99, slides, dry run |
-| After 26 | M100 public preview (Cloudflare Tunnel + Access) |
+| After 26 | M100 public preview (Cloudflare Tunnel + password login) |
 
 **Open items**
 

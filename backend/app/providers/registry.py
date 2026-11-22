@@ -138,7 +138,8 @@ _providers: Providers | None = None
 def get_providers() -> Providers:
     global _providers
     if _providers is None:
-        _providers = Providers(get_settings(), UsageRecorder(get_engine()))
+        settings = get_settings()
+        _providers = Providers(settings, UsageRecorder(get_engine(), settings.payg_alert_myr))
     return _providers
 
 

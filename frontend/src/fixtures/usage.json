@@ -30,5 +30,5 @@
   ],
   "questions": { "count": 14, "avgLatencyMs": 2140, "avgFirstTokenMs": 980, "avgTokens": 2290 },
   "ingestion": { "documents": 9, "chunks": 64, "embedTokens": 18240 },
-  "balances": { "planTokens": 4820000, "paygMyr": 18.4, "readAt": "2026-11-21T02:30:00Z" }
+  "balances": { "planTokens": 4820000, "paygMyr": 18.4, "readAt": "2026-11-21T02:30:00Z", "paygLow": false }
 }

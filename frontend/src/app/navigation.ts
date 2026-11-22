@@ -9,10 +9,12 @@ export interface NavItem {
   /** Other routes that belong under this entry, so it stays highlighted on them (e.g. a detail page). */
   alsoActiveFor?: string[]
   icon: Component
+  /** Shown to admins only (the API refuses the page for others, SPEC-11 §5.3). */
+  adminOnly?: boolean
 }
 
 export const navigation: NavItem[] = [
   { label: 'Chat', routeName: 'chat', icon: MessageSquare },
   { label: 'Documents', routeName: 'documents', alsoActiveFor: ['document'], icon: FileText },
-  { label: 'Usage', routeName: 'usage', icon: ChartColumn },
+  { label: 'Usage', routeName: 'usage', icon: ChartColumn, adminOnly: true },
 ]

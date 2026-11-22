@@ -54,7 +54,7 @@ async def test_spec08_ac02_every_error_is_problem_json(
     assert_problem(await client.get("/api/v1/_test/too-long"), 500, "internal")
 
 
-async def test_spec08_ac04_missing_demo_user_is_401_except_config(
+async def test_spec08_ac04_missing_demo_user_is_401_except_public_routes(
     app: FastAPI, client_as: Callable[[str | None], httpx.AsyncClient]
 ) -> None:
     paths = {p: ops for p, ops in app.openapi()["paths"].items() if p.startswith("/api/v1")}
@@ -66,6 +66,10 @@ async def test_spec08_ac04_missing_demo_user_is_401_except_config(
                 resp = await anonymous.request(method.upper(), path)
                 if template == "/api/v1/config":
                     assert resp.status_code == 200
+                elif template == "/api/v1/auth/login":
+                    assert_problem(resp, 422, "validation_failed")  # public; no body sent
+                elif template == "/api/v1/auth/logout":
+                    assert_problem(resp, 404, "not_found")  # public; off in demo mode (SPEC-08 §3)
                 else:
                     assert_problem(resp, 401, "unknown_user")
 
@@ -97,7 +101,9 @@ async def test_system_endpoints(
     assert [u["name"] for u in config["demoUsers"]] == ["Aisyah (HR)", "Ben (Staff)"]
     assert config["accessGroups"][0] == "all"
     assert config["maxUploadBytes"] == 25 * 1024 * 1024
-    assert (await client.get("/api/v1/me")).json() == {"id": "ben", "name": "Ben (Staff)", "groups": ["all"]}
+    assert config["authMode"] == "demo"
+    me = (await client.get("/api/v1/me")).json()
+    assert me == {"id": "ben", "name": "Ben (Staff)", "groups": ["all"], "isAdmin": True}
     async with client_as("aisyah") as aisyah:
         assert (await aisyah.get("/api/v1/me")).json()["groups"] == ["all", "hr"]
 
@@ -108,7 +114,7 @@ INDEX_ROW = re.compile(r"^\| \d+ \| `(GET|POST|PATCH|PUT|DELETE) (/[^`]*)` \|", 
 
 async def test_spec08_ac01_routes_match_the_endpoint_index(app: FastAPI) -> None:
     documented = set(INDEX_ROW.findall(SPEC08.read_text(encoding="utf-8")))
-    assert len(documented) == 15
+    assert len(documented) == 17
     for document in (app.openapi(), build()):
         served = {(m.upper(), p) for p, ops in document["paths"].items() for m in ops}
         assert served == documented

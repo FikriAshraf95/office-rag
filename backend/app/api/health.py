@@ -29,7 +29,7 @@ async def health(
 
 @router.get("/api/v1/config", response_model=ConfigOut)
 async def config(settings: SettingsDep) -> ConfigOut:
-    demo_users = [] if settings.auth_mode != "demo" else settings.demo_users.items()
+    demo_users = settings.demo_users.items() if settings.auth_mode == "demo" else []
     return ConfigOut(
         allowed_extensions=ALLOWED_EXTENSIONS,
         max_upload_bytes=settings.max_upload_bytes,
@@ -37,9 +37,10 @@ async def config(settings: SettingsDep) -> ConfigOut:
         access_groups=settings.access_groups(),
         doc_types=DOC_TYPES,
         org_name=settings.org_name,
+        auth_mode=settings.auth_mode,
     )
 
 
 @router.get("/api/v1/me", response_model=MeOut)
 async def me(user: CurrentUser) -> MeOut:
-    return MeOut(id=user.id, name=user.name, groups=list(user.groups))
+    return MeOut(id=user.id, name=user.name, groups=list(user.groups), is_admin=user.is_admin)

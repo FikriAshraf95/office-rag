@@ -30,6 +30,10 @@ os.environ.update(
     DEMO_USERS=DEMO_USERS,
     RERANK_MODEL="",
 )
+# The dev container loads the developer's .env into its environment; the real login users and session
+# secret must not reach tests (pydantic-settings would merge them into Settings built in a test).
+for _name in ("LOGIN_USERS", "SESSION_SECRET", "SESSION_DAYS", "TUNNEL_TOKEN"):
+    os.environ.pop(_name, None)
 
 import asyncio  # noqa: E402
 import logging  # noqa: E402
@@ -55,6 +59,9 @@ from tests.corpus import Corpus  # noqa: E402
 from tests.dbutil import migrate, recreate_database  # noqa: E402
 
 ALL_TABLES = "usage, questions, jobs, chunks, documents"
+
+# Password-login fixtures (M100): login_settings, login_app, login_client.
+pytest_plugins = ["tests.login"]
 
 
 # --- Event loop: the selector loop on every platform. On Windows the default Proactor loop connects

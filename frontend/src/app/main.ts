@@ -12,11 +12,17 @@ import { router } from './router'
 const app = createApp(App)
 app.use(createPinia())
 
-// The API client sends the chosen demo user and toasts errors (SPEC-07 §3, §8).
+// The API client sends the chosen demo user (demo mode only), returns to the login page when a
+// password-mode session ends, and toasts errors (SPEC-07 §3, §8).
 const user = useUserStore()
 configureHttp({
-  demoUser: () => user.userId,
+  demoUser: () => user.demoHeader,
   toastError: (message) => toast.error(message),
+  onSignedOut: () => {
+    if (!user.isPassword) return false
+    user.signedOut()
+    return true
+  },
 })
 
 applyTheme(readStoredTheme())

@@ -18,6 +18,9 @@ TRACE_HEADER = "X-Trace-Id"
 TITLES = {
     "bad_request": "Bad request",
     "unknown_user": "Unknown user",
+    "bad_credentials": "Wrong username or password",
+    "admin_only": "Admins only",
+    "user_rate_limited": "Too many questions",
     "not_found": "Not found",
     "method_not_allowed": "Method not allowed",
     "duplicate_document": "Duplicate document",
@@ -38,11 +41,14 @@ INTERNAL_DETAIL = "Something went wrong on our side. Try again; if it keeps happ
 
 
 class ApiError(Exception):
-    def __init__(self, status: int, code: str, detail: str, **extra: Any) -> None:
+    def __init__(
+        self, status: int, code: str, detail: str, *, headers: dict[str, str] | None = None, **extra: Any
+    ) -> None:
         super().__init__(detail)
         self.status = status
         self.code = code
         self.detail = detail
+        self.headers = headers
         self.extra = extra
 
 
@@ -109,7 +115,9 @@ class TraceIdMiddleware:
 
 async def _api_error(request: Request, exc: Exception) -> JSONResponse:
     assert isinstance(exc, ApiError)
-    return problem(request, exc.status, exc.code, exc.detail, **exc.extra)
+    response = problem(request, exc.status, exc.code, exc.detail, **exc.extra)
+    response.headers.update(exc.headers or {})
+    return response
 
 
 async def _validation_error(request: Request, exc: Exception) -> JSONResponse:

@@ -126,10 +126,13 @@ def test_spec11_ac04_no_secret_build_args_or_env_in_images() -> None:
     for ignore in (BACKEND / ".dockerignore", FRONTEND / ".dockerignore"):
         assert ".env" in ignore.read_text(encoding="utf-8").splitlines(), ignore
     assert ".env" in (REPO / ".gitignore").read_text(encoding="utf-8").splitlines()
-    # The compose file passes secrets only through env_file, never inline.
+    # The compose file passes secrets only through env_file or `${VAR}` interpolation from .env, never inline.
     for name, svc in _compose()["services"].items():
-        for key in svc.get("environment", {}):
-            assert not (_SECRET_NAME.search(key) and key != "POSTGRES_PASSWORD"), f"{name}: {key}"
+        for key, value in svc.get("environment", {}).items():
+            interpolated = re.fullmatch(r"\$\{" + key + r"(:-)?\}", str(value)) is not None
+            assert not _SECRET_NAME.search(key) or key == "POSTGRES_PASSWORD" or interpolated, (
+                f"{name}: {key}"
+            )
 
 
 def _tracked_files() -> list[Path]:
@@ -171,3 +174,40 @@ def test_spec11_ac04_no_secret_value_in_repo() -> None:
         assert not key_shaped.search(data), f"{path.relative_to(REPO)} holds an API-key-shaped string"
         if key and len(key) >= 8:
             assert key.encode() not in data, f"{path.relative_to(REPO)} holds the AI_API_KEY value"
+
+
+# --- M100: the public preview (SPEC-11 §5) ---
+
+
+def test_spec11_m100_cloudflared_under_public_profile() -> None:
+    services = _compose()["services"]
+    tunnel = services["cloudflared"]
+    assert tunnel["profiles"] == ["public"]
+    image = tunnel["image"]
+    assert image.startswith("cloudflare/cloudflared:") and not image.endswith(":latest"), "pin the image"
+    assert "--no-autoupdate" in tunnel["command"] and "run" in tunnel["command"]
+    assert tunnel["environment"] == {"TUNNEL_TOKEN": "${TUNNEL_TOKEN:-}"}
+    # No app secrets and no host port: the tunnel dials out, and only reaches frontend.
+    assert "env_file" not in tunnel
+    assert "ports" not in tunnel
+    for name, svc in services.items():
+        assert svc.get("restart") == "unless-stopped", f"{name} must restart unless stopped"
+        if name != "cloudflared":
+            assert "profiles" not in svc, f"{name} must run without the public profile"
+
+
+def test_spec11_m100_nginx_real_ip_and_sse_headers() -> None:
+    conf = _nginx()
+    assert "real_ip_header CF-Connecting-IP;" in conf
+    trusted = re.findall(r"set_real_ip_from\s+([^;]+);", conf)
+    assert trusted and all(not t.startswith("0.0.0.0") for t in trusted), "trust only private peers"
+    assert "add_header X-Accel-Buffering no" in _location(conf, "= /api/v1/chat")
+
+
+def test_spec11_m100_env_example_lists_preview_settings_without_secrets() -> None:
+    example = (REPO / ".env.example").read_text(encoding="utf-8")
+    for name in ("SESSION_SECRET", "TUNNEL_TOKEN"):
+        assert re.search(rf"^{name}=$", example, re.MULTILINE), f"{name} must be listed with no value"
+    assert re.search(r"^LOGIN_USERS=\{\}$", example, re.MULTILINE), "LOGIN_USERS must be an empty JSON object"
+    for name in ("SESSION_DAYS", "CHAT_RATE_PER_MIN", "CHAT_DAILY_CAP", "PAYG_ALERT_MYR"):
+        assert re.search(rf"^{name}=", example, re.MULTILINE), f"{name} must be listed"

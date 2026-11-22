@@ -6,16 +6,29 @@ Model names may appear here only as defaults; app code asks providers for a role
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import BaseModel, Field, SecretStr
+from pydantic import BaseModel, ConfigDict, Field, SecretStr
+from pydantic.alias_generators import to_camel
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 ALLOWED_EXTENSIONS = [".pdf", ".docx", ".xlsx", ".md", ".png", ".jpg", ".jpeg"]
+MIN_SESSION_SECRET = 32
 DOC_TYPES = ["policy", "handbook", "memo", "sop", "spreadsheet", "notice", "chart", "other"]
 
 
 class DemoUser(BaseModel):
     name: str
     groups: list[str]
+
+
+class LoginUser(BaseModel):
+    """One `LOGIN_USERS` entry (SPEC-11 §5.2). The hash comes from `python -m app.security.passwords`."""
+
+    model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
+
+    name: str
+    groups: list[str]
+    admin: bool = False
+    password_hash: SecretStr
 
 
 class StartupError(SystemExit):
@@ -31,7 +44,15 @@ class Settings(BaseSettings):
     max_upload_mb: int = 25
     demo_users: dict[str, DemoUser] = Field(default_factory=dict)
     org_name: str = "Serimaju Technologies"
-    auth_mode: Literal["demo", "cloudflare_access"] = "demo"
+    auth_mode: Literal["demo", "password"] = "demo"
+
+    # Public preview (SPEC-11 §5): password login, admin role and per-user chat limits.
+    login_users: dict[str, LoginUser] = Field(default_factory=dict)
+    session_secret: SecretStr = SecretStr("")
+    session_days: int = 7
+    chat_rate_per_min: int = 6
+    chat_daily_cap: int = 100
+    payg_alert_myr: float = 5.0
 
     ai_provider: Literal["ilmu", "openai", "azure", "fake"] = "ilmu"
     ai_base_url: str = "https://api.ilmu.ai/v1"
@@ -70,9 +91,18 @@ class Settings(BaseSettings):
     def max_upload_bytes(self) -> int:
         return self.max_upload_mb * 1024 * 1024
 
+    @property
+    def login_users_by_name(self) -> dict[str, LoginUser]:
+        """`LOGIN_USERS` with lowercased usernames, so a match ignores case."""
+        return {name.strip().lower(): user for name, user in self.login_users.items()}
+
+    def users(self) -> dict[str, DemoUser] | dict[str, LoginUser]:
+        """The users of the active auth mode: demo ids or login usernames."""
+        return self.demo_users if self.auth_mode == "demo" else self.login_users_by_name
+
     def access_groups(self) -> list[str]:
-        """Every group a demo user belongs to, `all` first."""
-        groups = {g for user in self.demo_users.values() for g in user.groups}
+        """Every group a user of the active auth mode belongs to, `all` first."""
+        groups = {g for user in self.users().values() for g in user.groups}
         return sorted(groups, key=lambda g: (g != "all", g))
 
 
@@ -82,8 +112,24 @@ def check_startup(settings: Settings) -> None:
         raise StartupError("Fake AI provider is not allowed in production.")
     if settings.app_env == "production" and settings.auth_mode == "demo":
         raise StartupError("Demo identity is not allowed in production. Set AUTH_MODE.")
-    if settings.auth_mode == "cloudflare_access":
-        raise StartupError("AUTH_MODE=cloudflare_access is not available yet (M100). Use AUTH_MODE=demo.")
+    if settings.auth_mode == "password":
+        if not settings.login_users:
+            raise StartupError("LOGIN_USERS is not set for AUTH_MODE=password. Set LOGIN_USERS.")
+        if len(settings.session_secret.get_secret_value()) < MIN_SESSION_SECRET:
+            raise StartupError(
+                f"SESSION_SECRET must be at least {MIN_SESSION_SECRET} characters for AUTH_MODE=password. "
+                "Generate one with: python -m app.security.passwords --secret"
+            )
+        bad = sorted(
+            n
+            for n, u in settings.login_users.items()
+            if not u.password_hash.get_secret_value().startswith("scrypt:")
+        )
+        if bad:
+            raise StartupError(
+                f"LOGIN_USERS has {len(bad)} user(s) without a valid passwordHash. "
+                "Make one with: python -m app.security.passwords"
+            )
     if settings.ai_provider != "fake" and not settings.ai_api_key.get_secret_value():
         raise StartupError(f"AI_API_KEY is not set for AI_PROVIDER={settings.ai_provider}. Set AI_API_KEY.")
 

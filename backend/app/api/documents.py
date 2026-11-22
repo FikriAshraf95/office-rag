@@ -18,7 +18,7 @@ from app.api.schemas import ChunkListOut, ChunkOut, DocumentListOut, DocumentOut
 from app.config import DOC_TYPES, Settings, get_settings
 from app.db.engine import get_session
 from app.ingestion import service
-from app.security.identity import CurrentUser, Identity
+from app.security.identity import AdminUser, CurrentUser, Identity
 from app.security.uploads import stage_upload
 
 # Multipart framing and the text fields add a little on top of the file itself.
@@ -78,7 +78,7 @@ def _clean_doc_type(value: str) -> str:
 async def upload_document(
     session: Session,
     settings: SettingsDep,
-    user: CurrentUser,
+    user: AdminUser,
     file: Annotated[UploadFile, File()],
     title: Annotated[str | None, Form()] = None,
     doc_type: Annotated[str | None, Form(alias="docType")] = None,
@@ -124,7 +124,7 @@ async def get_document(session: Session, user: CurrentUser, doc_id: DocId) -> Do
 
 @router.patch("/{id}", response_model=DocumentOut)
 async def patch_document(
-    session: Session, user: CurrentUser, doc_id: DocId, body: DocumentPatch
+    session: Session, user: AdminUser, doc_id: DocId, body: DocumentPatch
 ) -> DocumentOut:
     changes = {name: getattr(body, name) for name in body.model_fields_set}
     if "doc_type" in changes and changes["doc_type"] is not None:
@@ -139,7 +139,7 @@ async def patch_document(
 
 @router.delete("/{id}", status_code=204)
 async def delete_document(
-    session: Session, settings: SettingsDep, user: CurrentUser, doc_id: DocId
+    session: Session, settings: SettingsDep, user: AdminUser, doc_id: DocId
 ) -> Response:
     await service.delete_document(session, settings, user, doc_id)
     return Response(status_code=204)
@@ -161,7 +161,7 @@ async def download_file(
 
 
 @router.post("/{id}/reingest", status_code=202, response_model=DocumentOut)
-async def reingest_document(session: Session, user: CurrentUser, doc_id: DocId) -> DocumentOut:
+async def reingest_document(session: Session, user: AdminUser, doc_id: DocId) -> DocumentOut:
     return DocumentOut.model_validate(await service.request_reingest(session, user, doc_id))
 
 
@@ -169,7 +169,7 @@ async def reingest_document(session: Session, user: CurrentUser, doc_id: DocId) 
 async def replace_document_file(
     session: Session,
     settings: SettingsDep,
-    user: CurrentUser,
+    user: AdminUser,
     doc_id: DocId,
     file: Annotated[UploadFile, File()],
 ) -> DocumentOut:

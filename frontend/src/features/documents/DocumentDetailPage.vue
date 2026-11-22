@@ -227,26 +227,30 @@ const rows = computed(() => {
           </div>
         </div>
         <div class="flex flex-wrap items-center gap-2">
-          <Button @click="toggleStatus">{{
-            doc.status === 'current' ? 'Mark superseded' : 'Mark current'
-          }}</Button>
-          <Button @click="editOpen = true">Edit details</Button>
-          <input
-            ref="fileInput"
-            type="file"
-            class="hidden"
-            accept=".pdf,.docx,.xlsx,.md,.png,.jpg,.jpeg"
-            @change="replaceFile"
-          />
-          <Button :disabled="replacing" @click="fileInput?.click()"><Upload /> Replace file</Button>
+          <template v-if="user.isAdmin">
+            <Button @click="toggleStatus">{{
+              doc.status === 'current' ? 'Mark superseded' : 'Mark current'
+            }}</Button>
+            <Button @click="editOpen = true">Edit details</Button>
+            <input
+              ref="fileInput"
+              type="file"
+              class="hidden"
+              accept=".pdf,.docx,.xlsx,.md,.png,.jpg,.jpeg"
+              @change="replaceFile"
+            />
+            <Button :disabled="replacing" @click="fileInput?.click()"><Upload /> Replace file</Button>
+          </template>
           <Button variant="primary" @click="download"><Download /> Download original</Button>
-          <Button variant="ghost" class="text-danger" @click="deleteOpen = true">Delete</Button>
+          <Button v-if="user.isAdmin" variant="ghost" class="text-danger" @click="deleteOpen = true"
+            >Delete</Button
+          >
         </div>
       </header>
 
       <Banner v-if="doc.ingestStatus === 'failed'" tone="danger">
         {{ doc.ingestError ?? 'Ingestion failed. Select Retry to try again.' }}
-        <template #action>
+        <template v-if="user.isAdmin" #action>
           <Button size="sm" :disabled="retrying" @click="retry">Retry</Button>
         </template>
       </Banner>

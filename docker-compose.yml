@@ -1,9 +1,11 @@
 # Full stack (SPEC-11 §1): `docker compose up -d --build` → http://localhost:8080.
 # Local dev runs only Postgres here: `docker compose up -d postgres`.
+# Public preview: `docker compose --profile public up -d --build` adds the Cloudflare tunnel (SPEC-11 §5).
 # All host ports bind to loopback. Config comes from `.env`; nothing secret is baked into an image.
 services:
   postgres:
     image: pgvector/pgvector:pg17
+    restart: unless-stopped
     environment:
       POSTGRES_USER: rag
       POSTGRES_PASSWORD: rag
@@ -20,6 +22,7 @@ services:
 
   api:
     build: { context: ./backend, target: api }
+    restart: unless-stopped
     env_file: .env
     environment:
       DATABASE_URL: postgresql+asyncpg://rag:rag@postgres:5432/rag
@@ -33,6 +36,7 @@ services:
 
   worker:
     build: { context: ./backend, target: worker }
+    restart: unless-stopped
     env_file: .env
     environment:
       DATABASE_URL: postgresql+asyncpg://rag:rag@postgres:5432/rag
@@ -47,10 +51,24 @@ services:
 
   frontend:
     build: { context: ./frontend }
+    restart: unless-stopped
     ports:
       - "127.0.0.1:8080:80"
     depends_on:
       api: { condition: service_healthy }
+
+  # Public preview (SPEC-11 §5, M100): `docker compose --profile public up -d`.
+  # Remotely managed tunnel: the dashboard maps the public hostname to http://frontend:80.
+  # Only TUNNEL_TOKEN is passed (no env_file), so cloudflared never sees the app's secrets. No host port.
+  cloudflared:
+    image: cloudflare/cloudflared:2026.10.3
+    profiles: [public]
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${TUNNEL_TOKEN:-}
+    depends_on:
+      - frontend
 
 volumes:
   pgdata:

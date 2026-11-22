@@ -95,9 +95,16 @@ async function confirmDelete() {
 
 <template>
   <PageContainer width="wide">
-    <PageHeader title="Documents" description="Upload company documents and follow their ingestion." />
+    <PageHeader
+      title="Documents"
+      :description="
+        user.isAdmin
+          ? 'Upload company documents and follow their ingestion.'
+          : 'The company documents you can ask about.'
+      "
+    />
 
-    <UploadPanel />
+    <UploadPanel v-if="user.isAdmin" />
 
     <div class="flex flex-wrap items-center justify-between gap-3">
       <Tabs v-model="store.filter" variant="segmented">
@@ -126,7 +133,11 @@ async function confirmDelete() {
       v-else-if="store.items.length === 0"
       :icon="FileText"
       title="No documents yet"
-      description="Drop files above to add the first one. Each document is read in the background and shows Ready when it can be searched."
+      :description="
+        user.isAdmin
+          ? 'Drop files above to add the first one. Each document is read in the background and shows Ready when it can be searched.'
+          : 'An admin has not added any documents yet.'
+      "
     />
     <EmptyState
       v-else-if="store.visible.length === 0"
@@ -137,6 +148,7 @@ async function confirmDelete() {
     <DocumentsTable
       v-else
       :documents="store.visible"
+      :can-manage="user.isAdmin"
       @open="(d) => router.push({ name: 'document', params: { id: d.id } })"
       @edit="edit"
       @reingest="reingest"

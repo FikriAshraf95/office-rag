@@ -18,7 +18,8 @@ import { isActive } from '../store'
 import IngestStatusPill from './IngestStatusPill.vue'
 
 // SPEC-07 §6.2: a table from tablet width up, a card list on phones. Row actions appear on hover or focus.
-defineProps<{ documents: Document[] }>()
+/** `canManage`: admin actions (edit, re-ingest, status, delete); the API refuses them for others. */
+withDefaults(defineProps<{ documents: Document[]; canManage?: boolean }>(), { canManage: true })
 const emit = defineEmits<{
   open: [doc: Document]
   edit: [doc: Document]
@@ -102,14 +103,18 @@ const toggleLabel = (doc: Document) => (doc.status === 'current' ? 'Mark superse
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem @select="emit('open', doc)">Open</DropdownMenuItem>
-                <DropdownMenuItem @select="emit('edit', doc)">Edit details</DropdownMenuItem>
-                <DropdownMenuItem :disabled="isActive(doc)" @select="emit('reingest', doc)"
-                  >Re-ingest</DropdownMenuItem
-                >
-                <DropdownMenuItem @select="emit('toggleStatus', doc)">{{
-                  toggleLabel(doc)
-                }}</DropdownMenuItem>
-                <DropdownMenuItem class="text-danger" @select="emit('remove', doc)">Delete</DropdownMenuItem>
+                <template v-if="canManage">
+                  <DropdownMenuItem @select="emit('edit', doc)">Edit details</DropdownMenuItem>
+                  <DropdownMenuItem :disabled="isActive(doc)" @select="emit('reingest', doc)"
+                    >Re-ingest</DropdownMenuItem
+                  >
+                  <DropdownMenuItem @select="emit('toggleStatus', doc)">{{
+                    toggleLabel(doc)
+                  }}</DropdownMenuItem>
+                  <DropdownMenuItem class="text-danger" @select="emit('remove', doc)"
+                    >Delete</DropdownMenuItem
+                  >
+                </template>
               </DropdownMenuContent>
             </DropdownMenu>
           </td>
@@ -135,12 +140,16 @@ const toggleLabel = (doc: Document) => (doc.status === 'current' ? 'Mark superse
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem @select="emit('open', doc)">Open</DropdownMenuItem>
-              <DropdownMenuItem @select="emit('edit', doc)">Edit details</DropdownMenuItem>
-              <DropdownMenuItem :disabled="isActive(doc)" @select="emit('reingest', doc)"
-                >Re-ingest</DropdownMenuItem
-              >
-              <DropdownMenuItem @select="emit('toggleStatus', doc)">{{ toggleLabel(doc) }}</DropdownMenuItem>
-              <DropdownMenuItem class="text-danger" @select="emit('remove', doc)">Delete</DropdownMenuItem>
+              <template v-if="canManage">
+                <DropdownMenuItem @select="emit('edit', doc)">Edit details</DropdownMenuItem>
+                <DropdownMenuItem :disabled="isActive(doc)" @select="emit('reingest', doc)"
+                  >Re-ingest</DropdownMenuItem
+                >
+                <DropdownMenuItem @select="emit('toggleStatus', doc)">{{
+                  toggleLabel(doc)
+                }}</DropdownMenuItem>
+                <DropdownMenuItem class="text-danger" @select="emit('remove', doc)">Delete</DropdownMenuItem>
+              </template>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

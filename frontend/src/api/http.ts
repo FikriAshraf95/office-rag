@@ -2,14 +2,15 @@ import axios, { AxiosError, type AxiosInstance, type InternalAxiosRequestConfig 
 
 /**
  * The API client (SPEC-07 §3), copied from Private Repo App and trimmed for the RAG demo:
- * - base `/api/v1`, no cookies, no XSRF, no 401/403 redirect flows;
+ * - base `/api/v1`, no XSRF; in password mode the same-origin session cookie goes along by itself;
  * - every request sends `X-Demo-User` (SPEC-09 §3), except `GET /config`, which runs before a user
  *   is chosen (SPEC-07 §8);
  * - one error table for every call (below); pages only handle what is specific to them;
- * - `latestSignal(key)` aborts the previous in-flight request with the same key (search, filters).
+ * - `latestSignal(key)` aborts the previous in-flight request with the same key (search, filters);
+ * - in password mode a 401 `unknown_user` (session gone) calls `onSignedOut` instead of toasting.
  *
- * The demo user and toasts are wired in by `configureHttp` at boot, which keeps this module free of
- * import cycles and easy to test.
+ * The demo user, the sign-out hook and toasts are wired in by `configureHttp` at boot, which keeps
+ * this module free of import cycles and easy to test.
  */
 
 declare module 'axios' {
@@ -35,6 +36,8 @@ export interface HttpHooks {
   /** The chosen demo user's id, sent as `X-Demo-User`; null before one is chosen. */
   demoUser: () => string | null
   toastError: (message: string) => void
+  /** A 401 `unknown_user` arrived. Returns true when it handled it (password mode: show the login page). */
+  onSignedOut: () => boolean
 }
 
 export const DEMO_USER_HEADER = 'X-Demo-User'
@@ -42,6 +45,7 @@ export const DEMO_USER_HEADER = 'X-Demo-User'
 let hooks: HttpHooks = {
   demoUser: () => null,
   toastError: () => {},
+  onSignedOut: () => false,
 }
 
 export function configureHttp(next: Partial<HttpHooks>): void {
@@ -148,6 +152,10 @@ async function handleError(error: unknown): Promise<never> {
     case 500:
       // `detail` is generic; the details are in the server logs under the trace id.
       toast(`Something went wrong. Reference: ${problem.traceId ?? 'unknown'}`)
+      break
+    case 401:
+      if (problem.code === 'unknown_user' && hooks.onSignedOut()) break
+      toast(problem.detail)
       break
     default:
       // 400, 401 unknown_user, 409, 415, 429 and the 503 provider codes carry a user-facing detail.
