@@ -40,23 +40,27 @@ Start each milestone in a fresh session (`/clear`). *Opusplan* = `/model opuspla
 
 ## Commands
 
+**Everything runs in Docker.** Never install Python, uv, Node or caches on the Windows host. The dev container has Python 3.14 + uv and Node 22; the repo is bind-mounted, and the venv, `node_modules` and caches live in named volumes. It shares Postgres's network namespace (Postgres listens on 5433), so `localhost:5433`, `:8000` and `:5173` behave as on a host. Stop the full-stack compose first if it is running (same ports). In Git Bash, prefix commands that pass container paths with `MSYS_NO_PATHCONV=1`.
+
 ```bash
-docker compose up -d postgres                       # Postgres + pgvector on localhost:5433
-cd backend && uv sync --all-groups                  # deps (worker group = Docling)
-uv run alembic upgrade head                         # migrations, named M<nn>_<topic>
-uv run alembic revision -m "M02_chunks_index"       # new migration
-uv run uvicorn app.main:app --reload --port 8000    # API
-uv run python -m app.ingestion.worker               # worker
-uv run pytest -q                                    # all tests (fake AI, no network)
-uv run pytest -q -m "not docling"                   # fast subset
-uv run pytest tests/test_x.py::test_name            # one test
-uv run ruff check . && uv run ruff format --check . && uv run mypy app && uv run lint-imports
-uv run python -m app.export_openapi                 # → backend/openapi.json
-cd frontend && npm run dev                          # http://localhost:5173, proxies /api → :8000
-npm run lint && npm run typecheck && npm run test && npm run build
-npm run gen:api                                     # types from backend/openapi.json
-docker compose up -d --build                        # full stack on http://localhost:8080
-cd backend && uv run python -m app.eval --base-url http://localhost:8000 --user ben --label nemo-super
+# dev container: `dx` = docker compose -f docker-compose.dev.yml exec dev
+docker compose -f docker-compose.dev.yml up -d dev                       # dev + Postgres/pgvector
+dx sh -c "cd backend && uv sync --all-groups"                           # deps (worker group = Docling)
+dx sh -c "cd frontend && npm ci"
+dx sh -c "cd backend && uv run alembic upgrade head"                    # migrations, named M<nn>_<topic>
+dx sh -c "cd backend && uv run alembic revision -m 'M02_chunks_index'"  # new migration
+dx sh -c "cd backend && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000"   # API
+dx sh -c "cd backend && uv run python -m app.ingestion.worker"          # worker
+dx sh -c "cd backend && uv run pytest -q"                               # all tests (fake AI, no network)
+dx sh -c "cd backend && uv run pytest -q -m 'not docling'"              # fast subset
+dx sh -c "cd backend && uv run pytest tests/test_x.py::test_name"       # one test
+dx sh -c "cd backend && uv run ruff check . && uv run ruff format --check . && uv run mypy app && uv run lint-imports"
+dx sh -c "cd backend && uv run python -m app.export_openapi"            # -> backend/openapi.json
+dx sh -c "cd frontend && npm run dev -- --host 0.0.0.0"                 # http://localhost:5173, proxies /api -> :8000
+dx sh -c "cd frontend && npm run lint && npm run typecheck && npm run test && npm run build"
+dx sh -c "cd frontend && npm run gen:api"                               # types from backend/openapi.json
+docker compose up -d --build                                             # full stack on http://localhost:8080 (not the dev container)
+dx sh -c "cd backend && uv run python -m app.eval --base-url http://localhost:8000 --user ben --label nemo-super"
 ```
 
 ## Never break

@@ -1,0 +1,57 @@
+# Development container: everything builds, tests and runs in here, nothing on the Windows host.
+#   docker compose -f docker-compose.dev.yml up -d dev
+#   docker compose -f docker-compose.dev.yml exec dev sh -c "cd backend && uv sync --all-groups"
+# `dev` shares Postgres's network namespace and Postgres listens on 5433, so localhost:5433 works
+# inside the container exactly as on a host (tests and .env.example assume it). Host ports are
+# published on the postgres service. Stop the full-stack compose first if it is running.
+name: office-rag-dev
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: rag
+      POSTGRES_DB: rag
+    command: ["postgres", "-p", "5433"]
+    ports:
+      - "127.0.0.1:5433:5433"   # Postgres
+      - "127.0.0.1:8000:8000"   # API (served from dev)
+      - "127.0.0.1:5173:5173"   # Vite (run with --host 0.0.0.0)
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -p 5433 -U rag -d rag"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: office-rag-dev
+    working_dir: /workspace
+    env_file:
+      - path: .env
+        required: false
+    network_mode: "service:postgres"
+    environment:
+      CHOKIDAR_USEPOLLING: "1"
+    volumes:
+      - .:/workspace
+      - venv:/opt/venv
+      - node_modules:/workspace/frontend/node_modules
+      - uvcache:/root/.cache/uv
+      - npmcache:/root/.npm
+      - hfcache:/cache/hf
+    depends_on:
+      postgres: { condition: service_healthy }
+
+volumes:
+  pgdata:
+  venv:
+  node_modules:
+  uvcache:
+  npmcache:
+  hfcache:
