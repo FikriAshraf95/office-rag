@@ -5,7 +5,7 @@
 > **Model:** Opus. Every later milestone builds on these contracts. **Human review after.**
 
 ## Goal
-Lay the foundations every later milestone builds on: the repo layout, the Compose services, the database with every SPEC-02 table, the FastAPI app with the error shape and system endpoints, provider interfaces with fakes and usage logging, the test host with its network guard, and a frontend shell copied from the Office Suite kit that passes all its gates. No ingestion, search or chat yet.
+Lay the foundations every later milestone builds on: the repo layout, the Compose services, the database with every SPEC-02 table, the FastAPI app with the error shape and system endpoints, provider interfaces with fakes and usage logging, the test host with its network guard, and a frontend shell copied from the Private Repo App kit that passes all its gates. No ingestion, search or chat yet.
 
 ## Tasks
 ### Repo

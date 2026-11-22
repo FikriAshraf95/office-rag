@@ -1,7 +1,7 @@
 import axios, { AxiosError, type AxiosInstance, type InternalAxiosRequestConfig } from 'axios'
 
 /**
- * The API client (SPEC-07 §3), copied from Office Suite and trimmed for the RAG demo:
+ * The API client (SPEC-07 §3), copied from Private Repo App and trimmed for the RAG demo:
  * - base `/api/v1`, no cookies, no XSRF, no 401/403 redirect flows;
  * - every request sends `X-Demo-User` (SPEC-09 §3), except `GET /config`, which runs before a user
  *   is chosen (SPEC-07 §8);

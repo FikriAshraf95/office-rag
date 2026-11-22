@@ -34,7 +34,7 @@ Every error is `application/problem+json`:
   "errors": { "file": ["…"] }, "traceId": "4f1c…", "existingId": "…" }
 ```
 
-`errors` (field → messages) only on 422. Extra members are allowed per code (e.g. `existingId`, which is present only when the caller can see the existing document; otherwise the `detail` names no title). The same shape matches the Office Suite `ApiProblem` type used by `http.ts`.
+`errors` (field → messages) only on 422. Extra members are allowed per code (e.g. `existingId`, which is present only when the caller can see the existing document; otherwise the `detail` names no title). The same shape matches the Private Repo App `ApiProblem` type used by `http.ts`.
 
 | Status | `code` | When |
 |---|---|---|

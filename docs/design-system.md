@@ -1,6 +1,6 @@
-> **Copied from Office Suite v2** (`office-suite-v2/docs/design-system.md`, v1.3) on 2026-11-19 for the RAG frontend ([SPEC-07](specs/SPEC-07-frontend.md)). Tokens are unchanged, so `tokens.css` copied from Office Suite stays valid. Links to SPEC-21, SPEC-23, SPEC-00 §8 and D023 point at the **Office Suite** repo. Board, Gantt, calendar, kanban and ADO rules do not apply here; the item-panel width and responsive rules are reused for the chat SourcePanel.
+> **Copied from Private Repo App v2** (`private-repo-app/docs/design-system.md`, v1.3) on 2026-11-19 for the RAG frontend ([SPEC-07](specs/SPEC-07-frontend.md)). Tokens are unchanged, so `tokens.css` copied from Private Repo App stays valid. Links to SPEC-21, SPEC-23, SPEC-00 §8 and D023 point at the **Private Repo App** repo. Board, Gantt, calendar, kanban and ADO rules do not apply here; the item-panel width and responsive rules are reused for the chat SourcePanel.
 
-# Design System — Office Suite
+# Design System — Private Repo App
 
 > **Status:** v1.3 (2026-11-04, UI refresh: soft elevation, larger radii, soft-edged inputs, soft status pills) · v1.2 (2026-10-31, Poppins replaces Instrument Sans) · v1.1 (2026-10-31, UI/UX audit: neutral grey, layout and responsive rules) · v1 (2026-10-28) · **Consumed by:** [SPEC-21 §7](specs/SPEC-21-frontend.md#7-design-system-integration) and every UI milestone
 > **Live system (Claude Design):** https://claude.ai/artifact/8ZqRXeTkqcJn2DwxJ5gPqe — the brand book, component previews and cover. Screens are designed in Claude Design from that system.

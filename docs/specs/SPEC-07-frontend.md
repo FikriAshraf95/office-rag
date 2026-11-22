@@ -1,11 +1,11 @@
 # SPEC-07 — Frontend
 
-> **Status:** v1 (2026-11-19) · **Owner of:** pages, components, states, the reuse map from Office Suite
+> **Status:** v1 (2026-11-19) · **Owner of:** pages, components, states, the reuse map from Private Repo App
 > Look: [design-system.md](../design-system.md) · Endpoints: [SPEC-08](SPEC-08-api-contract.md) · Events: [SPEC-05 §6](SPEC-05-answering.md)
 
 ## 1. Stack
 
-**Decision (2026-11-19, replaces PrimeVue from the handoff):** the frontend reuses the **Office Suite v2 UI kit** (`D:\fikri\onedrive\demo\office-suite-v2-feature-uiux-revamp\frontend`): Vue 3 + Vite + strict TypeScript, Pinia, Vue Router, **Tailwind v4 + shadcn-vue (reka-ui)**, lucide icons, `vue-sonner` toasts, design tokens generated from `docs/design-system.md`. Reason: the kit already implements the design system; copying it is faster and keeps one look across the team's apps.
+**Decision (2026-11-19, replaces PrimeVue from the handoff):** the frontend reuses the **Private Repo App v2 UI kit** (`D:\fikri\onedrive\demo\private-repo-app-feature-uiux-revamp\frontend`): Vue 3 + Vite + strict TypeScript, Pinia, Vue Router, **Tailwind v4 + shadcn-vue (reka-ui)**, lucide icons, `vue-sonner` toasts, design tokens generated from `docs/design-system.md`. Reason: the kit already implements the design system; copying it is faster and keeps one look across the team's apps.
 
 Added for RAG: `markdown-it` (answers), `dompurify` (already in the kit), `pdfjs-dist` (citation viewer), `openapi-typescript` (generated API types). Node ≥ 22.
 
@@ -36,7 +36,7 @@ Each feature owns its `api.ts`, typed from the generated `src/api/schema.d.ts` (
 
 ## 3. Reuse map (copy, don't reinvent)
 
-| Need | Copy from `office-suite-v2/frontend/` | Change |
+| Need | Copy from `private-repo-app/frontend/` | Change |
 |---|---|---|
 | Tokens, Tailwind, fonts, focus, scrollbars | `src/styles/tokens.css`, `src/styles/tailwind.css`, `src/assets/fonts/poppins/` | Drop `.rich-text` mention and `.doc-prose` doc styles; add `.answer-prose` (§5.3) |
 | Token generator | `scripts/gen-tokens.mjs` | Reads `../docs/design-system.md` (same path) |
@@ -126,7 +126,7 @@ Each feature owns its `api.ts`, typed from the generated `src/api/schema.d.ts` (
 - Keyboard: `/` focuses the composer; `Esc` closes the SourcePanel.
 
 ## 10. Testing
-- Vitest + `@vue/test-utils` with jsdom, as in Office Suite. SSE parsing, the citation markdown rule, sanitizing, stores and status pills are unit-tested.
+- Vitest + `@vue/test-utils` with jsdom, as in Private Repo App. SSE parsing, the citation markdown rule, sanitizing, stores and status pills are unit-tested.
 - Fixtures mode: `VITE_USE_FIXTURES=1` makes `features/*/api.ts` return fixtures from `src/fixtures/` (a recorded SSE stream included), so UI work can start before the backend endpoints exist.
 
 ## 11. Acceptance checks

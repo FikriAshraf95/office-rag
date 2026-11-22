@@ -186,7 +186,7 @@
   }
 }
 
-/* Rich text (Office Suite), the base look for HTML shown through SafeHtml. Tokens only. */
+/* Rich text (Private Repo App), the base look for HTML shown through SafeHtml. Tokens only. */
 .rich-text {
   overflow-wrap: anywhere;
 }

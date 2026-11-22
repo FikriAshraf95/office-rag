@@ -31,7 +31,7 @@ Start each milestone in a fresh session (`/clear`). *Opusplan* = `/model opuspla
 | M02 Ingestion | Opusplan | Docling, 5 formats, chunking, job states |
 | M03 Retrieval | Opusplan | One SQL with filters in both arms, gate |
 | M04 Answering | Opus | Prompt, refusal, citation validation |
-| M05 Frontend | Sonnet | Assembly from the Office Suite kit; can run in parallel from M02 |
+| M05 Frontend | Sonnet | Assembly from the Private Repo App kit; can run in parallel from M02 |
 | M06 Evaluation | Sonnet | Script + scoring rule |
 | M07 Vision *(stretch)* | Sonnet | Bounded addition |
 | M08 Reranker *(stretch)* | Sonnet | Wire + measure |

@@ -3,7 +3,7 @@
 Vue 3 `<script setup lang="ts">`, strict TypeScript, Pinia, Vue Router, Tailwind v4 + shadcn-vue (reka-ui), lucide icons, vue-sonner. Spec: [SPEC-07](../docs/specs/SPEC-07-frontend.md). Look: [design-system.md](../docs/design-system.md).
 
 ## Copy, don't reinvent
-The UI kit comes from **Office Suite v2** (`D:\fikri\onedrive\demo\office-suite-v2-feature-uiux-revamp\frontend`). Before writing a component, check SPEC-07 §3 and copy the Office Suite file. Change only what the "Change" column says. Never pull in Office Suite features outside that table (SignalR, boards, tiptap, auth store).
+The UI kit comes from **Private Repo App v2** (`D:\fikri\onedrive\demo\private-repo-app-feature-uiux-revamp\frontend`). Before writing a component, check SPEC-07 §3 and copy the Private Repo App file. Change only what the "Change" column says. Never pull in Private Repo App features outside that table (SignalR, boards, tiptap, auth store).
 
 ## Rules
 - Features live in `src/features/<name>/` with their own `api.ts`, typed from the **generated** `src/api/schema.d.ts` (`npm run gen:api`). No hand-written API types, no global API file.

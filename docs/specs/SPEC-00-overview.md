@@ -13,7 +13,7 @@ Parts:
 - `api`: FastAPI. Upload, document list, search, chat (SSE), usage.
 - `worker`: a separate process that claims ingestion jobs from a Postgres `jobs` table (`SELECT … FOR UPDATE SKIP LOCKED`).
 - `postgres`: PostgreSQL 17 + pgvector. One database for documents, chunks, vectors, full-text and usage.
-- `frontend`: Vue 3 + Vite + TypeScript, built on the Office Suite UI kit (Tailwind v4 + shadcn-vue + design tokens), served by nginx.
+- `frontend`: Vue 3 + Vite + TypeScript, built on the Private Repo App UI kit (Tailwind v4 + shadcn-vue + design tokens), served by nginx.
 
 ## 2. Concepts
 
@@ -53,7 +53,7 @@ See [IDEA](../IDEA.md#non-goals-for-this-build). Also: no conversation memory on
 | [SPEC-04](SPEC-04-retrieval.md) | Hybrid search, RRF, filters before ranking, reranker |
 | [SPEC-05](SPEC-05-answering.md) | Prompt, citations, refusal, streaming events |
 | [SPEC-06](SPEC-06-ai-providers.md) | Provider config, roles, retries, 429/402, usage logging, portability |
-| [SPEC-07](SPEC-07-frontend.md) | Pages, components, states, reuse of the Office Suite kit |
+| [SPEC-07](SPEC-07-frontend.md) | Pages, components, states, reuse of the Private Repo App kit |
 | [SPEC-08](SPEC-08-api-contract.md) | **Every** endpoint and the one error shape |
 | [SPEC-09](SPEC-09-security-and-access.md) | Uploads, secrets, identity, access groups, data rules |
 | [SPEC-10](SPEC-10-testing-and-eval.md) | Test conventions, invariants, eval script and scoring |

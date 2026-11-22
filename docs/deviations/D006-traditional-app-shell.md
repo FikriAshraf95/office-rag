@@ -5,7 +5,7 @@
 - **Status:** Resolved → spec updated (2026-11-21)
 
 ## Spec says
-- Layout: copy `AppLayout.vue`, `AppTopBar.vue` from Office Suite, change only the nav and top bar contents.
+- Layout: copy `AppLayout.vue`, `AppTopBar.vue` from Private Repo App, change only the nav and top bar contents.
 - Navigation: sidebar on `surface-page` with no edge; the current entry is a raised `surface` pill with `shadow-sm`; the top bar and page sit in a rounded `radius-xl` sheet with `shadow-sm`.
 
 ## Implementation does

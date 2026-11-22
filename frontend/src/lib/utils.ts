@@ -6,7 +6,7 @@ export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs))
 }
 
-/** "1.5 MB", "12 KB", "300 B" (copied from Office Suite `features/files/api.ts`). */
+/** "1.5 MB", "12 KB", "300 B" (copied from Private Repo App `features/files/api.ts`). */
 export function formatBytes(bytes: number): string {
   const round = (n: number) => Math.round(n * 10) / 10
   if (bytes >= 1024 ** 3) return `${round(bytes / 1024 ** 3)} GB`

@@ -21,7 +21,7 @@ If nothing relevant is found, it says so and suggests who to contact. **It never
 
 ## 3. The user's SDD workflow (to follow AND to showcase)
 
-**Use the user's real SDD format.** It's modelled on their production project (*Office Suite*: 27 specs, 22+ milestones, 23 deviations), plus a few token-saving improvements from a review of that project. Mirror the structure and the file conventions below exactly.
+**Use the user's real SDD format.** It's modelled on their production project (*Private Repo App*: 27 specs, 22+ milestones, 23 deviations), plus a few token-saving improvements from a review of that project. Mirror the structure and the file conventions below exactly.
 
 ### 3.1 File layout
 

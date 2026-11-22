@@ -3,7 +3,7 @@ import { Maximize, ZoomIn, ZoomOut } from 'lucide-vue-next'
 import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 
-// PNG/JPG sources (SPEC-07 §5.4), adapted from Office Suite's ImageLightbox: the same zoom, but
+// PNG/JPG sources (SPEC-07 §5.4), adapted from Private Repo App's ImageLightbox: the same zoom, but
 // inline in the panel and fed a Blob (fetched with X-Demo-User), so no direct URL to the API. The
 // object URL is revoked when the image changes or the panel closes.
 const props = defineProps<{ blob: Blob; alt: string }>()

@@ -9,7 +9,7 @@ import { useUserStore } from '@/stores/user'
 import AppTopBar from './AppTopBar.vue'
 import { useSidebarStore } from './sidebar'
 
-// The app shell (SPEC-07 §3), copied from Office Suite without realtime, notifications, search or
+// The app shell (SPEC-07 §3), copied from Private Repo App without realtime, notifications, search or
 // the workspace tree. The sidebar holds Chat, Documents and Usage.
 const user = useUserStore()
 const route = useRoute()

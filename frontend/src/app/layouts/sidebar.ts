@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 
-// Desktop sidebar rail (SPEC-07 §3, copied from Office Suite). The user's choice is kept in localStorage; with no
+// Desktop sidebar rail (SPEC-07 §3, copied from Private Repo App). The user's choice is kept in localStorage; with no
 // choice the rail is the default from 1024 to 1279px. Below 768px the drawer is used instead.
 const KEY = 'rag.sidebar.collapsed'
 const NARROW = '(min-width: 1024px) and (max-width: 1279px)'

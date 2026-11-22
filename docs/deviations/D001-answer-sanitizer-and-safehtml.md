@@ -5,7 +5,7 @@
 - **Status:** Resolved → spec updated (folded at M99, 2026-11-21)
 
 ## Spec says
-- `SafeHtml.vue`: copy from Office Suite, change: none.
+- `SafeHtml.vue`: copy from Private Repo App, change: none.
 - `sanitize.ts`: answer allowlist; `button` only with `class="citation"`, `data-cite` and `aria-label`; `a` only with `href` (http/https/mailto).
 
 ## Implementation does

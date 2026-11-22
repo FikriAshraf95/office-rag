@@ -19,7 +19,7 @@ All config comes from `.env` (via `env_file`). Ports bind to loopback only.
   - `base`: `uv sync --frozen --no-dev` without the `worker` dependency group.
   - `api`: from `base`.
   - `worker`: from `base` + `uv sync --group worker` (Docling, CPU-only `torch` from the PyTorch CPU index) + `docling-tools models download` (layout, tableformer, RapidOCR) into `/models/docling` and the `BAAI/bge-m3` tokenizer into the Hugging Face cache at `/models/hf`, with `DOCLING_ARTIFACTS_PATH=/models/docling`, `HF_HOME=/models/hf` and `HF_HUB_OFFLINE=1` set after the download step. No model downloads at runtime. The compose file pins `DOCLING_ARTIFACTS_PATH` and `HF_HUB_OFFLINE` for the worker, so a host value in `.env` can't point it elsewhere.
-- **frontend**: `node:22-alpine` build → `nginx:alpine` with `nginx/default.conf` (copy from Office Suite `frontend/nginx/`, adjust upstream; CSP `default-src 'self'; img-src 'self' blob: data:; worker-src 'self' blob:` for pdf.js).
+- **frontend**: `node:22-alpine` build → `nginx:alpine` with `nginx/default.conf` (copy from Private Repo App `frontend/nginx/`, adjust upstream; CSP `default-src 'self'; img-src 'self' blob: data:; worker-src 'self' blob:` for pdf.js).
 
 ## 3. Environment (`.env.example`)
 
